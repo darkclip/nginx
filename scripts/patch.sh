@@ -3,6 +3,7 @@
 sed -i "s#cd /tmp/openresty#\
 git clone https://github.com/arut/nginx-rtmp-module.git\\
 mv /tmp/nginx-rtmp-module /tmp/openresty/nginx-rtmp-module\\
+ls\\
 &#g" scripts/build-openresty
 
 sed -i "s#./configure \\\#&\\
