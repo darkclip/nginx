@@ -6,9 +6,8 @@ on:
       - "master"
     paths:
       - ".github/workflows/build-docker.yml"
+      - "scripts/patch-npm-nginx.sh"
   workflow_dispatch:
-  schedule:
-    - cron: "0 16 * * *"
 
 jobs:
   build-docker:
@@ -27,7 +26,7 @@ jobs:
         run: |
           cp scripts/* build/
           cd build
-          ./patch.sh
+          ./patch-npm-nginx.sh
           echo "OPENRESTY_VERSION=1.25.3.2" >> "$GITHUB_ENV"
           echo "LUA_VERSION=5.4.7" >> "$GITHUB_ENV"
           echo "LUAROCKS_VERSION=3.11.1" >> "$GITHUB_ENV"
@@ -48,7 +47,7 @@ jobs:
           context: build/
           file: build/docker/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           build-args: |
             OPENRESTY_VERSION=${{ env.OPENRESTY_VERSION }}
             LUA_VERSION=${{ env.LUA_VERSION }}
