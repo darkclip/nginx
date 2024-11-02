@@ -13,14 +13,14 @@ sed -i 's#make -j2#make -j$(getconf _NPROCESSORS_ONLN)#g' scripts/build-openrest
 
 
 sed -i "s#libmaxminddb-dev \\\#&\\
-	cron \\\\\
+	cron \\\\\\
 	nano \\\\\
 #g" docker/Dockerfile
 
 sed -i "s#&& /tmp/install-openresty \\\#&\\
-\&\& /tmp/install-crowdsec_openresty_bouncer \\\\\
-\&\& useradd -s /usr/sbin/nologin nginx \\\\\
-\&\& mkdir -p /var/log/nginx /var/cache/nginx \\\\\
+	\&\& /tmp/install-crowdsec_openresty_bouncer \\\\\\
+	\&\& useradd -s /usr/sbin/nologin nginx \\\\\\
+	\&\& mkdir -p /var/log/nginx /var/cache/nginx \\\\\
 #g" docker/Dockerfile
 
 sed -i "/org.label-schema/d" docker/Dockerfile
