@@ -43,7 +43,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: debug
-        run: echo $(pwd)
+        run: |
+          echo $(pwd)
+          ls build
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
