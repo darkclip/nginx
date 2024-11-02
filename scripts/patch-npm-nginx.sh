@@ -27,4 +27,4 @@ sed -i "s#&& /tmp/install-openresty \\\#&\\
 
 sed -i "/org.label-schema/d" docker/Dockerfile
 
-echo 'CMD ["nginx", "-g", "daemon off;"]' >> docker/Dockerfile
+echo 'CMD service cron start && nginx -g "daemon off;"' >> docker/Dockerfile
