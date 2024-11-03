@@ -47,7 +47,7 @@ ARG TARGETPLATFORM
 ARG OPENRESTY_VERSION
 ARG LUA_VERSION
 ARG LUAROCKS_VERSION
-ARG CROWDSEC_VERSION=1.0.5
+ARG CROWDSEC_VERSION=v1.0.5
 ARG ACME_VERSION=3.0.9
 
 ENV OPENRESTY_VERSION=$OPENRESTY_VERSION
@@ -84,9 +84,9 @@ RUN apt-get update \
     unzip \
     zlib1g \
     xz-utils \
-    socat \
     nano \
     cron \
+    socat \
     && apt-get clean \
     && apt-get update \
     && apt-get install -y wget gettext libmaxminddb-dev gcc make git \

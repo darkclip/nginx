@@ -28,9 +28,6 @@ jobs:
           cp -rf build/* ./
           cd scripts
           ./patch-npm.sh
-          echo "OPENRESTY_VERSION=1.25.3.2" >> "$GITHUB_ENV"
-          echo "LUA_VERSION=5.4.7" >> "$GITHUB_ENV"
-          echo "LUAROCKS_VERSION=3.11.1" >> "$GITHUB_ENV"
           echo "DATE_TAG=$(date -I)" >> "$GITHUB_ENV"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -48,9 +45,9 @@ jobs:
           push: true
           platforms: linux/amd64
           build-args: |
-            OPENRESTY_VERSION=${{ env.OPENRESTY_VERSION }}
-            LUA_VERSION=${{ env.LUA_VERSION }}
-            LUAROCKS_VERSION=${{ env.LUAROCKS_VERSION }}
+            OPENRESTY_VERSION=1.25.3.2
+            LUA_VERSION=5.4.7
+            LUAROCKS_VERSION=3.11.1
           tags: |
             darkclip/nginx:latest
             darkclip/nginx:${{ env.DATE_TAG }}
