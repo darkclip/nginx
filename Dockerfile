@@ -107,6 +107,7 @@ RUN apt-get update \
     && pushd /tmp/acme \
     && ./acme.sh --install --no-profile --force --home "$ACME_HOME" --config-home "$ACME_CONFIG_HOME" --cert-home "$CERT_HOME" \
     && popd \
+    && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y wget gettext libmaxminddb-dev gcc make git \
     && apt-get autoremove -y \
     && apt-get clean \
