@@ -91,7 +91,9 @@ RUN apt-get update \
     && useradd -s /usr/sbin/nologin nginx \
     && mkdir -p /tmp/acme "$ACMESH_CONFIG_HOME" \
     && /tmp/install-github-release.sh -r "acmesh-official/acme.sh" -m acme -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
-    && /tmp/acme/acme.sh --install --no-profile --force --home "$ACMESH_HOME" --config-home "$ACMESH_CONFIG_HOME" --cert-home "$CERT_HOME" \
+    && pushd /tmp/acme \
+    && ./acme.sh --install --no-profile --force --home "$ACMESH_HOME" --config-home "$ACMESH_CONFIG_HOME" --cert-home "$CERT_HOME" \
+    && popd \
     && apt-get remove -y wget gettext libmaxminddb-dev gcc make git \
     && apt-get autoremove -y \
     && apt-get clean \
