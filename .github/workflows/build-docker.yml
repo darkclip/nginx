@@ -26,7 +26,7 @@ jobs:
         run: |
           cp -rf build/* ./
           cd scripts
-          ls scripts
+          ls
           ./patch-npm.sh
           echo "OPENRESTY_VERSION=1.25.3.2" >> "$GITHUB_ENV"
           echo "LUA_VERSION=5.4.7" >> "$GITHUB_ENV"
