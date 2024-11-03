@@ -67,6 +67,7 @@ ENV LE_WORKING_DIR=/opt/acme
 ENV ACME_CONFIG_HOME=/data/acme/conf
 ENV LE_CONFIG_HOME=/data/acme/conf
 ENV CERT_HOME=/data/acme/certs
+ENV PATH=$ACME_HOME:$PATH
 
 COPY --from=nginxbuilder /tmp /tmp
 
