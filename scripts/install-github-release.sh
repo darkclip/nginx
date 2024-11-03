@@ -6,7 +6,7 @@ DEFAULT_MATCH_STAGE_1="browser_download_url"
 
 
 main(){
-    if [ -z "$REPO" ]; then
+    if [ -z $REPO ]; then
         usage
         exit 1
     fi
@@ -54,6 +54,10 @@ main(){
             curl $SET_PROXY -SfLo source_pkg.zip "$dl_url"
             unzip -o source_pkg.zip
             dirname=$(rev <<< $pkgname | cut -d '.' -f 2- | rev)
+        elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) >/dev/null 2>&1; then
+            curl $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
+            tar -xvf source_pkg.$ext
+            dirname=$(rev <<< $pkgname | cut -d '.' -f 2- | rev)
         elif (echo $ext_tar | grep -i tar) >/dev/null 2>&1; then
             curl $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
             tar -xvf source_pkg.tar.$ext
@@ -62,19 +66,20 @@ main(){
             echo "Unknown format: $pkgname"
             exit 1
         fi
+        rm source_pkg.*
         if [ ! -z $PKG_DIR ]; then
             if [ "$PKG_DIR" = "-" ]; then
                 if [ -z $SED_EXP ]; then
-                    cd $dirname
+                    cd "$dirname"
                 else
-                    cd $(echo $dirname | sed $SED_EXP)
+                    cd "$(echo $dirname | sed -E $SED_EXP)"
                 fi
             elif [ $PKG_DIR -ge 0 ]; then
                 dirs=$(ls -l|awk '/^d/ {print $NF}')
                 arr_dirs=($dirs)
-                cd ${arr_dirs[$PKG_DIR]}
+                cd "${arr_dirs[$PKG_DIR]}"
             else
-                cd $PKG_DIR
+                cd "$PKG_DIR"
             fi
         fi
 
@@ -87,21 +92,24 @@ main(){
         echo "Installing..."
         echo "From: $CWD"
         echo "To: $PROG_PATH/"
-        cp -fr * "$PROG_PATH/"
         if [ -z $PROG_NAME ]; then
-            echo "Install Complete!"
+            cp -fr * "$PROG_PATH/"
         else
-            chmod +x "$PROG_PATH/$PROG_NAME"
-            if [ -z $VER_PARAM ]; then
-                echo "Install Complete!"
+            if [ $FILE_COPY -eq 1 ]; then
+                cp -f "$PROG_NAME" "$PROG_PATH/"
             else
-                echo "Install Complete ($curr_ver -> $($PROG_PATH/$PROG_NAME $VER_PARAM 2>/dev/null||echo VERSION_NOT_EXIST))!"
+                cp -fr * "$PROG_PATH/"
+            fi
+            chmod +x "$PROG_PATH/$PROG_NAME"
+            if [ ! -z $VER_PARAM ]; then
+                echo "Version: $curr_ver -> $($PROG_PATH/$PROG_NAME $VER_PARAM 2>/dev/null||echo VERSION_NOT_EXIST)!"
             fi
         fi
+        echo "Install Complete!"
         popd >/dev/null
         rm -rf "$tmp_dir"
 
-        if [ ! -z "$CMD_RELOAD" ]; then
+        if [ ! -z $CMD_RELOAD ]; then
             $CMD_RELOAD
         fi
     fi
@@ -117,6 +125,7 @@ usage(){
     echo "    -m <MATCH>       Match stage 2 with regexp";
     echo "    -p <PATH>        Program path";
     echo "    -n <NAME>        Program name";
+    echo "    -f               Copy program name file only (when -n is set)";
     echo "    -o <NAME>        Package name";
     echo "    -d <DIR>         Dir inside package (set number as index; set '-' as packge name)";
     echo "    -e <EXP>         Expression for sed (only for '-d -')";
@@ -131,13 +140,14 @@ MATCH_STAGE_1=$DEFAULT_MATCH_STAGE_1
 MATCH_STAGE_2=
 PROG_PATH=
 PROG_NAME=
+FILE_COPY=0
 PKG_NAME=
 PKG_DIR=
 SED_EXP=
 VER_PARAM=
 CMD_RELOAD=
 SET_PROXY=
-while getopts ":r:t:k:m:p:n:o:d:e:v:c:x:" OPT; do
+while getopts ":r:t:k:m:p:n:fo:d:e:v:c:x:" OPT; do
     case $OPT in
         r)
             REPO=$OPTARG;
@@ -156,6 +166,9 @@ while getopts ":r:t:k:m:p:n:o:d:e:v:c:x:" OPT; do
             ;;
         n)
             PROG_NAME=$OPTARG;
+            ;;
+        f)
+            FILE_COPY=1;
             ;;
         o)
             PKG_NAME=$OPTARG;
