@@ -4,9 +4,24 @@
 
 FROM debian:bookworm-slim AS nginxbuilder
 
-ARG OPENRESTY_VERSION
-ARG LUA_VERSION
-ARG LUAROCKS_VERSION
+ARG TARGETPLATFORM \
+    OPENRESTY_VERSION=1.25.3.2 \
+    LUA_VERSION=5.4.7 \
+    LUAROCKS_VERSION=3.11.1 \
+    CROWDSEC_OPENRESTY_BOUNCER_VERSION=1.0.5 \
+    ACME_VERSION=3.0.9
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+    CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
+    OPENRESTY_VERSION=$OPENRESTY_VERSION \
+    LUA_VERSION=$LUA_VERSION \
+    LUAROCKS_VERSION=$LUAROCKS_VERSION \
+    CROWDSEC_OPENRESTY_BOUNCER_VERSION=$CROWDSEC_OPENRESTY_BOUNCER_VERSION \
+    ACME_VERSION=$ACME_VERSION \
+    ACME_HOME=/data/acme \
+    LE_WORKING_DIR=/data/acme \
+    ACME_CONFIG_HOME=/data/acme/conf \
+    LE_CONFIG_HOME=/data/acme/conf \
+    CERT_HOME=/data/acme/certs
 
 RUN apt-get update \
     && apt-get install -y \
@@ -44,23 +59,6 @@ LABEL maintainer="darkclip <darkclip@gmail.com>"
 
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
-ARG TARGETPLATFORM
-ARG LUA_VERSION
-ARG LUAROCKS_VERSION
-ARG OPENRESTY_VERSION
-ARG CROWDSEC_OPENRESTY_BOUNCER_VERSION
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
-    CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
-    LUA_VERSION=${LUA_VERSION} \
-    LUAROCKS_VERSION=${LUAROCKS_VERSION} \
-    OPENRESTY_VERSION=${OPENRESTY_VERSION} \
-    CROWDSEC_OPENRESTY_BOUNCER_VERSION=${CROWDSEC_OPENRESTY_BOUNCER_VERSION} \
-    ACMESH_HOME=/data/acme \
-    LE_WORKING_DIR=/data/acme \
-    ACMESH_CONFIG_HOME=/data/acme/conf \
-    LE_CONFIG_HOME=/data/acme/conf \
-    CERT_HOME=/data/acme/certs 
-
 COPY --from=nginxbuilder /tmp /tmp
 
 RUN apt-get update \
@@ -89,10 +87,10 @@ RUN apt-get update \
     && /tmp/install-openresty \
     && /tmp/install-crowdsec_openresty_bouncer \
     && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p /tmp/acme "$ACMESH_CONFIG_HOME" \
-    && /tmp/install-github-release.sh -r "acmesh-official/acme.sh" -m acme -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
+    && mkdir -p /tmp/acme "$ACME_CONFIG_HOME" \
+    && /tmp/install-github-release.sh -r "acmesh-official/acme.sh" -t $ACME_VERSION -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
     && pushd /tmp/acme \
-    && ./acme.sh --install --no-profile --force --home "$ACMESH_HOME" --config-home "$ACMESH_CONFIG_HOME" --cert-home "$CERT_HOME" \
+    && ./acme.sh --install --no-profile --force --home "$ACME_HOME" --config-home "$ACME_CONFIG_HOME" --cert-home "$CERT_HOME" \
     && popd \
     && apt-get remove -y wget gettext libmaxminddb-dev gcc make git \
     && apt-get autoremove -y \

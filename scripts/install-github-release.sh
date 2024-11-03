@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-DEFAULT_URL_KEY="browser_download_url"
+DEFAULT_RELEASE="latest"
+DEFAULT_MATCH_STAGE_1="browser_download_url"
 
 
 main(){
@@ -11,22 +12,21 @@ main(){
     fi
     echo "Query for $REPO"
     echo
-    api_url="https://api.github.com/repos/$REPO/releases/latest"
+    api_url="https://api.github.com/repos/$REPO/releases/$TAG"
     echo "API: $api_url"
     echo
-    candidates=$(curl $SET_PROXY -sSfL $api_url | grep -P $MATCH_RELEASE)
+    candidates=$(curl $SET_PROXY -sSfL $api_url | grep -P "$MATCH_STAGE_1")
     echo "Candidates:"
     echo "$candidates"
     echo
-    dl_url=$(echo "$candidates" | grep $URL_KEY | cut -d '"' -f 4)
+    dl_url=$(echo "$candidates" | grep -P "$MATCH_STAGE_2" | cut -d '"' -f 4)
+    if [ $(echo -e "$dl_url" | wc -l) -ne 1 ] || [ -z $dl_url ]; then
+        exit 0
+    fi
     echo "From:"
     echo "$dl_url"
     echo
 
-    if [ $(echo -e "$dl_url" | wc -l) -ne 1 ] || [ -z $dl_url ]; then
-        usage
-        exit 1
-    fi
     if [ -z $PROG_NAME ] || [ -z $VER_PARAM ] ; then
         curr_ver="VERSION_NOT_EXIST"
     else
@@ -112,8 +112,9 @@ usage(){
     echo "Usage: $0 [OPTIONS]";
     echo "Options:";
     echo "    -r <REPO>        Github repo (required)";
-    echo "    -m <MATCH>       Match release with regexp (required)";
-    echo "    -k <KEY>         URL key for Github API (default: $DEFAULT_URL_KEY)";
+    echo "    -t <TAG>         Release tag (default: $DEFAULT_RELEASE)";
+    echo "    -k <KEY>         Match stage 1 with regexp (default: $DEFAULT_MATCH_STAGE_1)";
+    echo "    -m <MATCH>       Match stage 2 with regexp";
     echo "    -p <PATH>        Program path";
     echo "    -n <NAME>        Program name";
     echo "    -o <NAME>        Package name";
@@ -125,8 +126,9 @@ usage(){
 }
 
 REPO=
-MATCH_RELEASE=
-URL_KEY=$DEFAULT_URL_KEY
+TAG=$DEFAULT_RELEASE
+MATCH_STAGE_1=$DEFAULT_MATCH_STAGE_1
+MATCH_STAGE_2=
 PROG_PATH=
 PROG_NAME=
 PKG_NAME=
@@ -135,16 +137,19 @@ SED_EXP=
 VER_PARAM=
 CMD_RELOAD=
 SET_PROXY=
-while getopts ":r:m:k:p:n:o:d:e:v:c:x:" OPT; do
+while getopts ":r:t:k:m:p:n:o:d:e:v:c:x:" OPT; do
     case $OPT in
         r)
             REPO=$OPTARG;
             ;;
-        m)
-            MATCH_RELEASE=$OPTARG;
+        t)
+            TAG="tags/$OPTARG";
             ;;
         k)
-            URL_KEY=$OPTARG;
+            MATCH_STAGE_1=$OPTARG;
+            ;;
+        m)
+            MATCH_STAGE_2=$OPTARG;
             ;;
         p)
             PROG_PATH=$(realpath -e $OPTARG);
