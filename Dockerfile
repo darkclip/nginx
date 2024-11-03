@@ -57,14 +57,16 @@ ENV CROWDSEC_VERSION=$CROWDSEC_VERSION
 ENV ACME_VERSION=$ACME_VERSION
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-ENV NGINX_CONF=/etc/nginx/conf.d
 ENV LUALIB=/etc/nginx/lualib
-ENV ACME_HOME=/data/acme
-ENV LE_WORKING_DIR=/data/acme
+ENV NGINX_CONF=/data/nginx/conf.d
+ENV NGINX_LOG=/data/nginx/log
+ENV NGINX_CACHE=/data/nginx/cache
+ENV CROWDSEC_DATA=/data/crowdsec
+ENV ACME_HOME=/opt/acme
+ENV LE_WORKING_DIR=/opt/acme
 ENV ACME_CONFIG_HOME=/data/acme/conf
 ENV LE_CONFIG_HOME=/data/acme/conf
 ENV CERT_HOME=/data/acme/certs
-ENV CROWDSEC_DATA=/data/crowdsec
 
 COPY --from=nginxbuilder /tmp /tmp
 
@@ -93,11 +95,12 @@ RUN apt-get update \
     && /tmp/install-lua \
     && /tmp/install-openresty \
     && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p /tmp/crowdsec "$CROWDSEC_DATA" /tmp/acme "$ACME_CONFIG_HOME" \
+    && mkdir -p "$NGINX_CONF" "$NGINX_LOG" "$NGINX_CACHE" /tmp/crowdsec "$CROWDSEC_DATA" /tmp/acme "$ACME_HOME" "$ACME_CONFIG_HOME" "$CERT_HOME" \
     && /tmp/install-github-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "$CROWDSEC_VERSION" -p /tmp/crowdsec -d 0 \
     && pushd /tmp/crowdsec \
-    && ./install.sh --docker --NGINX_CONF_DIR="$NGINX_CONF" --LIB_PATH="$LUALIB" --CONFIG_PATH="$CROWDSEC_DATA" --DATA_PATH="$CROWDSEC_DATA" \
+    && ./install.sh --docker --LIB_PATH="$LUALIB" --NGINX_CONF_DIR="$NGINX_CONF" --CONFIG_PATH="$CROWDSEC_DATA" --DATA_PATH="$CROWDSEC_DATA" \
     && sed -i 's|ENABLED=.*|ENABLED=false|' "$CROWDSEC_DATA"/crowdsec-openresty-bouncer.conf \
+    && sed -i 's|MODE=.*|MODE=stream|' "$CROWDSEC_DATA"/crowdsec-openresty-bouncer.conf \
     && popd \
     && /tmp/install-github-release.sh -r "acmesh-official/acme.sh" -t "$ACME_VERSION" -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
     && pushd /tmp/acme \
@@ -108,5 +111,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/* /var/log/* /tmp/* /var/lib/dpkg/status-old
+
+VOLUME [ "/data" ]
 
 CMD service cron start && nginx -g "daemon off;"
