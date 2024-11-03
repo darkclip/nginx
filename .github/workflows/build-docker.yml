@@ -24,7 +24,7 @@ jobs:
           path: build
       - name: Patch build files
         run: |
-          cp -rn build/* ./
+          cp -rf build/* ./
           cd scripts
           ./patch-npm.sh
           echo "OPENRESTY_VERSION=1.25.3.2" >> "$GITHUB_ENV"
