@@ -27,7 +27,6 @@ jobs:
           cp -rf build/* ./
           cd scripts
           ./patch-npm.sh
-          cd ..
           echo "OPENRESTY_VERSION=1.25.3.2" >> "$GITHUB_ENV"
           echo "LUA_VERSION=5.4.7" >> "$GITHUB_ENV"
           echo "LUAROCKS_VERSION=3.11.1" >> "$GITHUB_ENV"
@@ -45,6 +44,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          context: .
           push: true
           platforms: linux/amd64
           build-args: |
