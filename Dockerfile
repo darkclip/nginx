@@ -41,7 +41,7 @@ COPY ./scripts/install-crowdsec_openresty_bouncer /tmp/install-crowdsec_openrest
 FROM debian:bookworm-slim AS final
 LABEL maintainer="darkclip <darkclip@gmail.com>"
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 ARG TARGETPLATFORM
 ARG LUA_VERSION
@@ -54,17 +54,7 @@ ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     OPENRESTY_VERSION=${OPENRESTY_VERSION} \
     CROWDSEC_OPENRESTY_BOUNCER_VERSION=${CROWDSEC_OPENRESTY_BOUNCER_VERSION}
 
-
-# Copy lua and luarocks builds from first image
-COPY --from=nginxbuilder \
-    /tmp/lua \
-    /tmp/luarocks \
-    /tmp/openresty \
-    /tmp/install-lua \
-    /tmp/install-openresty \
-    /tmp/install-crowdsec_openresty_bouncer \
-    /tmp/
-
+COPY --from=nginxbuilder /tmp /tmp
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -96,6 +86,5 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /var/cache/* /var/log/* /tmp/* /var/lib/dpkg/status-old
-
 
 CMD service cron start && nginx -g "daemon off;"
