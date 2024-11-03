@@ -41,7 +41,7 @@ COPY ./scripts/install-crowdsec_openresty_bouncer /tmp/install-crowdsec_openrest
 FROM debian:bookworm-slim AS final
 LABEL maintainer="darkclip <darkclip@gmail.com>"
 
-SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ARG TARGETPLATFORM
 ARG LUA_VERSION
@@ -49,6 +49,8 @@ ARG LUAROCKS_VERSION
 ARG OPENRESTY_VERSION
 ARG CROWDSEC_OPENRESTY_BOUNCER_VERSION
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+    LUA_VERSION=${LUA_VERSION} \
+    LUAROCKS_VERSION=${LUAROCKS_VERSION} \
     OPENRESTY_VERSION=${OPENRESTY_VERSION} \
     CROWDSEC_OPENRESTY_BOUNCER_VERSION=${CROWDSEC_OPENRESTY_BOUNCER_VERSION}
 

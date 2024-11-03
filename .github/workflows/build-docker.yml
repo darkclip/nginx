@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/build-docker.yml"
       - "scripts/patch-npm-nginx.sh"
+      - "Dockerfile"
   workflow_dispatch:
 
 jobs:
