@@ -33,6 +33,7 @@ RUN /tmp/build-openresty
 COPY ./scripts/install-lua /tmp/install-lua
 COPY ./scripts/install-openresty /tmp/install-openresty
 COPY ./scripts/install-crowdsec_openresty_bouncer /tmp/install-crowdsec_openresty_bouncer
+COPY ./scripts/install-github-release.sh /tmp/
 
 #############
 # Final Image
@@ -49,10 +50,16 @@ ARG LUAROCKS_VERSION
 ARG OPENRESTY_VERSION
 ARG CROWDSEC_OPENRESTY_BOUNCER_VERSION
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+    CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     LUA_VERSION=${LUA_VERSION} \
     LUAROCKS_VERSION=${LUAROCKS_VERSION} \
     OPENRESTY_VERSION=${OPENRESTY_VERSION} \
     CROWDSEC_OPENRESTY_BOUNCER_VERSION=${CROWDSEC_OPENRESTY_BOUNCER_VERSION}
+    ACMESH_HOME=/data/acme \
+    LE_WORKING_DIR=/data/acme \
+    ACMESH_CONFIG_HOME=/data/acme/conf \
+    LE_CONFIG_HOME=/data/acme/conf \
+    CERT_HOME=/data/acme/certs 
 
 COPY --from=nginxbuilder /tmp /tmp
 
@@ -81,6 +88,9 @@ RUN apt-get update \
     && /tmp/install-openresty \
     && /tmp/install-crowdsec_openresty_bouncer \
     && useradd -s /usr/sbin/nologin nginx \
+    && mkdir -p /tmp/acme
+    && /tmp/install-github-release.sh -r "acmesh-official/acme.sh" -m acme -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
+    && /tmp/acme/acme.sh --install --no-profile --force --home "$ACMESH_HOME" --cert-home "$CERT_HOME" --config-home "$ACMESH_CONFIG_HOME" \
     && apt-get remove -y wget gettext libmaxminddb-dev gcc make git \
     && apt-get autoremove -y \
     && apt-get clean \
