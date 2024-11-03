@@ -88,7 +88,7 @@ RUN apt-get update \
     && /tmp/install-openresty \
     && /tmp/install-crowdsec_openresty_bouncer \
     && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p $ACMESH_CONFIG_HOME \
+    && mkdir -p /tmp/acme $ACMESH_CONFIG_HOME \
     && /tmp/install-github-release.sh -r "acmesh-official/acme.sh" -m acme -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
     && /tmp/acme/acme.sh --install --no-profile --force --home "$ACMESH_HOME" --cert-home "$CERT_HOME" --config-home "$ACMESH_CONFIG_HOME" \
     && apt-get remove -y wget gettext libmaxminddb-dev gcc make git \
