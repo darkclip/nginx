@@ -2,7 +2,7 @@
 # Nginx Builder
 #############
 
-FROM darkclip:nginx-builder AS nginxbuilder
+FROM darkclip/nginx-builder:latest AS nginxbuilder
 
 #############
 # Final Image
