@@ -10,26 +10,34 @@ ARG LUAROCKS_VERSION
 
 RUN apt-get update \
     && apt-get install -y \
-    build-essential \
     ca-certificates \
+    curl \
+    build-essential \
     libncurses-dev \
     libpcre3-dev \
     libreadline-dev \
     libssl-dev \
-    openssl unzip \
-    wget \
+    openssl \
+    xz-utils \
     zlib1g-dev \
+    unzip \
     git \
     libmaxminddb-dev
 
+COPY ./scripts/install-release.sh /tmp/
+
 # Lua build
-COPY ./scripts/build-lua /tmp/build-lua
-RUN /tmp/build-lua
+RUN  /tmp/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /tmp/lua -d 0 \
+    && pushd /tmp/lua \
+    && make linux test \
+    && make install
+
+RUN /tmp/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /tmp/luarocks -d 0 \
+    && pushd /tmp/luarocks \
+    && ./configure \
+    && make
 
 # Nginx build
 COPY ./scripts/build-openresty /tmp/build-openresty
 RUN /tmp/build-openresty
 
-COPY ./scripts/install-lua /tmp/install-lua
-COPY ./scripts/install-openresty /tmp/install-openresty
-COPY ./scripts/install-github-release.sh /tmp/

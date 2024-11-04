@@ -20,11 +20,11 @@ ARG LUAROCKS_VERSION
 ARG CROWDSEC_VERSION=v1.0.5
 ARG ACME_VERSION=3.0.9
 
-ENV OPENRESTY_VERSION=$OPENRESTY_VERSION
-ENV LUA_VERSION=$LUA_VERSION
-ENV LUAROCKS_VERSION=$LUAROCKS_VERSION
-ENV CROWDSEC_VERSION=$CROWDSEC_VERSION
-ENV ACME_VERSION=$ACME_VERSION
+ENV OPENRESTY_VERSION=${OPENRESTY_VERSION}
+ENV LUA_VERSION=${LUA_VERSION}
+ENV LUAROCKS_VERSION=${LUAROCKS_VERSION}
+ENV CROWDSEC_VERSION=${CROWDSEC_VERSION}
+ENV ACME_VERSION=${ACME_VERSION}
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 ENV LUALIB=/etc/nginx/lualib
@@ -37,7 +37,7 @@ ENV LE_WORKING_DIR=/opt/acme
 ENV ACME_CONFIG_HOME=/data/acme/conf
 ENV LE_CONFIG_HOME=/data/acme/conf
 ENV CERT_HOME=/data/acme/certs
-ENV PATH=$ACME_HOME:$PATH
+ENV PATH=${ACME_HOME}:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
 
@@ -48,6 +48,7 @@ RUN apt-get update \
     curl \
     tzdata \
     xz-utils \
+    zlib1g \
     unzip \
     nano \
     openssl \
@@ -57,25 +58,31 @@ RUN apt-get update \
     libpcre3 \
     libreadline8 \
     perl \
-    zlib1g \
     cron \
     socat \
     && apt-get clean \
     && apt-get update \
     && apt-get install -y wget gettext libmaxminddb-dev gcc make git \
-    && /tmp/install-lua \
-    && /tmp/install-openresty \
-    && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p "$NGINX_CONF" "$NGINX_LOG" "$NGINX_CACHE" "$CROWDSEC_DATA" "$ACME_HOME" "$ACME_CONFIG_HOME" "$CERT_HOME" \
-    && /tmp/install-github-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "$CROWDSEC_VERSION" -p /tmp/crowdsec -d 0 \
-    && pushd /tmp/crowdsec \
-    && ./install.sh --docker --LIB_PATH="$LUALIB" --NGINX_CONF_DIR="$NGINX_CONF" --CONFIG_PATH="$CROWDSEC_DATA" --DATA_PATH="$CROWDSEC_DATA" \
-    && sed -i 's|ENABLED=.*|ENABLED=false|' "$CROWDSEC_DATA"/crowdsec-openresty-bouncer.conf \
-    && sed -i 's|MODE=.*|MODE=stream|' "$CROWDSEC_DATA"/crowdsec-openresty-bouncer.conf \
+    && pushd /tmp/lua \
+    && make install \
     && popd \
-    && /tmp/install-github-release.sh -r "acmesh-official/acme.sh" -t "$ACME_VERSION" -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
+    && pushd /tmp/luarocks \
+    && make install \
+    && popd \
+    && pushd /tmp/openresty \
+    && make install \
+    && popd \
+    && useradd -s /usr/sbin/nologin nginx \
+    && mkdir -p "${NGINX_CONF}" "${NGINX_LOG}" "${NGINX_CACHE}" "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" \
+    && /tmp/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -p /tmp/crowdsec -d 0 \
+    && pushd /tmp/crowdsec \
+    && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGINX_CONF}" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
+    && sed -i 's|ENABLED=.*|ENABLED=false|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
+    && sed -i 's|MODE=.*|MODE=stream|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
+    && popd \
+    && /tmp/install-release.sh -r "acmesh-official/acme.sh" -t "${ACME_VERSION}" -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
     && pushd /tmp/acme \
-    && ./acme.sh --install --no-profile --force --home "$ACME_HOME" --config-home "$ACME_CONFIG_HOME" --cert-home "$CERT_HOME" \
+    && ./acme.sh --install --no-profile --force --home "${ACME_HOME}" --config-home "${ACME_CONFIG_HOME}" --cert-home "${CERT_HOME}" \
     && popd \
     && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y wget gettext libmaxminddb-dev gcc make git \

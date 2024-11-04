@@ -18,17 +18,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout build files
-        uses: actions/checkout@v4
-        with:
-          repository: NginxProxyManager/docker-nginx-full
-          ref: master
-          path: build
-      - name: Patch build files
-        run: |
-          cp -rf build/* ./
-          cd scripts
-          ./patch-npm.sh
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
