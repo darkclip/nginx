@@ -92,6 +92,14 @@ main(){
         echo "Installing..."
         echo "From: $CWD"
         echo "To: $PROG_PATH/"
+        if [ ! -d $PROG_PATH ]; then
+            if [ -e $PROG_PATH ]; then
+                echo "Program path is not directory!"
+                exit 1
+            else
+                mkdir -p $PROG_PATH
+            fi
+        fi
         if [ -z $PROG_NAME ]; then
             cp -fr * "$PROG_PATH/"
         else

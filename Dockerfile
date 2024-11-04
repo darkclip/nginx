@@ -73,21 +73,21 @@ COPY --from=nginxbuilder /tmp /tmp
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    apache2-utils \
+    tini \
     ca-certificates \
     curl \
-    figlet \
+    tzdata \
+    xz-utils \
+    unzip \
+    nano \
+    openssl \
+    apache2-utils \
     jq \
     libncurses6 \
     libpcre3 \
     libreadline8 \
-    openssl \
     perl \
-    tzdata \
-    unzip \
     zlib1g \
-    xz-utils \
-    nano \
     cron \
     socat \
     && apt-get clean \
@@ -96,7 +96,7 @@ RUN apt-get update \
     && /tmp/install-lua \
     && /tmp/install-openresty \
     && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p "$NGINX_CONF" "$NGINX_LOG" "$NGINX_CACHE" /tmp/crowdsec "$CROWDSEC_DATA" /tmp/acme "$ACME_HOME" "$ACME_CONFIG_HOME" "$CERT_HOME" \
+    && mkdir -p "$NGINX_CONF" "$NGINX_LOG" "$NGINX_CACHE" "$CROWDSEC_DATA" "$ACME_HOME" "$ACME_CONFIG_HOME" "$CERT_HOME" \
     && /tmp/install-github-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "$CROWDSEC_VERSION" -p /tmp/crowdsec -d 0 \
     && pushd /tmp/crowdsec \
     && ./install.sh --docker --LIB_PATH="$LUALIB" --NGINX_CONF_DIR="$NGINX_CONF" --CONFIG_PATH="$CROWDSEC_DATA" --DATA_PATH="$CROWDSEC_DATA" \
@@ -118,4 +118,6 @@ WORKDIR /data
 
 VOLUME [ "/data" ]
 
-CMD service cron start && nginx -g "daemon off;"
+CMD ["service cron start && nginx -g 'daemon off;'"]
+
+ENTRYPOINT [ "tini", "--" ]
