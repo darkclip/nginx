@@ -38,6 +38,6 @@ RUN /tmp/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luar
     && make
 
 # Nginx build
-COPY ./scripts/build-openresty /tmp/build-openresty
-RUN /tmp/build-openresty
+COPY ./scripts/build-openresty.sh /tmp/build-openresty.sh
+RUN /tmp/build-openresty.sh
 

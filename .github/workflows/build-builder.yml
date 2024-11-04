@@ -6,8 +6,8 @@ on:
       - "master"
     paths:
       - ".github/workflows/build-builder.yml"
-      - "scripts/patch-npm-nginx.sh"
-      - "scripts/install-github-release.sh"
+      - "scripts/build-openresty.sh"
+      - "scripts/install-release.sh"
       - "builder.Dockerfile"
   workflow_dispatch:
 
