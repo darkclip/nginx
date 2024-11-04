@@ -115,9 +115,7 @@ RUN apt-get update \
     && rm -rf /var/cache/* /var/log/* /tmp/* /var/lib/dpkg/status-old
 
 WORKDIR /data
-
 VOLUME [ "/data" ]
 
-CMD ["service cron start && nginx -g 'daemon off;'"]
-
 ENTRYPOINT [ "tini", "--" ]
+CMD ["service cron start && nginx -g 'daemon off;'"]

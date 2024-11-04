@@ -27,99 +27,88 @@ main(){
     echo "$dl_url"
     echo
 
-    if [ -z $PROG_NAME ] || [ -z $VER_PARAM ] ; then
-        curr_ver="VERSION_NOT_EXIST"
+
+    if [ -z $PROG_PATH ]; then
+        exit 0
+    fi
+    echo "Downloading..."
+    pkgname=$(echo $dl_url | awk -F'/' '{print $NF}')
+    if [ ! -z $PKG_NAME ]; then
+        pkgname=$PKG_NAME
+    fi
+    tmp_dir="/tmp/$pkgname-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)"
+    mkdir -p "$tmp_dir"
+    pushd "$tmp_dir" >/dev/null 2>&1
+    ext=$(echo $pkgname | awk -F'.' '{print $NF}')
+    ext_tar=$(echo $pkgname | awk -F'.' '{print $(NF-1)}')
+    dirname=
+    if (echo $ext | grep -i zip) >/dev/null 2>&1; then
+        curl $SET_PROXY -SfLo source_pkg.zip "$dl_url"
+        unzip -o source_pkg.zip
+        dirname=$(rev <<< $pkgname | cut -d '.' -f 2- | rev)
+    elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) >/dev/null 2>&1; then
+        curl $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
+        tar -xvf source_pkg.$ext
+        dirname=$(rev <<< $pkgname | cut -d '.' -f 2- | rev)
+    elif (echo $ext_tar | grep -i tar) >/dev/null 2>&1; then
+        curl $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
+        tar -xvf source_pkg.tar.$ext
+        dirname=$(rev <<< $pkgname | cut -d '.' -f 3- | rev)
     else
-        curr_ver=$($PROG_PATH/$PROG_NAME $VER_PARAM 2>/dev/null||echo VERSION_NOT_EXIST)
+        echo "Unknown format: $pkgname"
+        exit 1
+    fi
+    rm source_pkg.*
+    if [ ! -z $PKG_DIR ]; then
+        if [ "$PKG_DIR" = "-" ]; then
+            if [ -z $SED_EXP ]; then
+                cd "$dirname"
+            else
+                cd "$(echo $dirname | sed -E $SED_EXP)"
+            fi
+        elif [ $PKG_DIR -ge 0 ]; then
+            dirs=$(ls -l|awk '/^d/ {print $NF}')
+            arr_dirs=($dirs)
+            cd "${arr_dirs[$PKG_DIR]}"
+        else
+            cd "$PKG_DIR"
+        fi
     fi
 
-    if (echo $dl_url | grep -i $curr_ver) >/dev/null 2>&1; then
-        echo "Already latest version!"
+    CWD=$(pwd)
+    if [ ${CWD:0:5} != "/tmp/" ]; then
+        echo "Wrong dir inside package!"
+        exit 1
+    fi
+    PROG_PATH=$(realpath $PROG_PATH);
+    echo
+    echo "Installing..."
+    echo "From: $CWD"
+    echo "To: $PROG_PATH/"
+    if [ ! -d $PROG_PATH ]; then
+        if [ -e $PROG_PATH ]; then
+            echo "Program path is not directory!"
+            exit 1
+        else
+            mkdir -p $PROG_PATH
+        fi
+    fi
+    if [ -z $PROG_NAME ]; then
+        cp -fr * "$PROG_PATH/"
     else
-        if [ -z $PROG_PATH ]; then
-            exit 0
-        fi
-        echo "Downloading..."
-        pkgname=$(echo $dl_url | awk -F'/' '{print $NF}')
-        if [ ! -z $PKG_NAME ]; then
-            pkgname=$PKG_NAME
-        fi
-        tmp_dir="/tmp/$pkgname-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)"
-        mkdir -p "$tmp_dir"
-        pushd "$tmp_dir" >/dev/null 2>&1
-        ext=$(echo $pkgname | awk -F'.' '{print $NF}')
-        ext_tar=$(echo $pkgname | awk -F'.' '{print $(NF-1)}')
-        dirname=
-        if (echo $ext | grep -i zip) >/dev/null 2>&1; then
-            curl $SET_PROXY -SfLo source_pkg.zip "$dl_url"
-            unzip -o source_pkg.zip
-            dirname=$(rev <<< $pkgname | cut -d '.' -f 2- | rev)
-        elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) >/dev/null 2>&1; then
-            curl $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
-            tar -xvf source_pkg.$ext
-            dirname=$(rev <<< $pkgname | cut -d '.' -f 2- | rev)
-        elif (echo $ext_tar | grep -i tar) >/dev/null 2>&1; then
-            curl $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
-            tar -xvf source_pkg.tar.$ext
-            dirname=$(rev <<< $pkgname | cut -d '.' -f 3- | rev)
+        if [ $FILE_COPY -eq 1 ]; then
+            cp -f "$PROG_NAME" "$PROG_PATH/"
         else
-            echo "Unknown format: $pkgname"
-            exit 1
-        fi
-        rm source_pkg.*
-        if [ ! -z $PKG_DIR ]; then
-            if [ "$PKG_DIR" = "-" ]; then
-                if [ -z $SED_EXP ]; then
-                    cd "$dirname"
-                else
-                    cd "$(echo $dirname | sed -E $SED_EXP)"
-                fi
-            elif [ $PKG_DIR -ge 0 ]; then
-                dirs=$(ls -l|awk '/^d/ {print $NF}')
-                arr_dirs=($dirs)
-                cd "${arr_dirs[$PKG_DIR]}"
-            else
-                cd "$PKG_DIR"
-            fi
-        fi
-
-        CWD=$(pwd)
-        if [ ${CWD:0:5} != "/tmp/" ]; then
-            echo "Wrong dir inside package!"
-            exit 1
-        fi
-        echo
-        echo "Installing..."
-        echo "From: $CWD"
-        echo "To: $PROG_PATH/"
-        if [ ! -d $PROG_PATH ]; then
-            if [ -e $PROG_PATH ]; then
-                echo "Program path is not directory!"
-                exit 1
-            else
-                mkdir -p $PROG_PATH
-            fi
-        fi
-        if [ -z $PROG_NAME ]; then
             cp -fr * "$PROG_PATH/"
-        else
-            if [ $FILE_COPY -eq 1 ]; then
-                cp -f "$PROG_NAME" "$PROG_PATH/"
-            else
-                cp -fr * "$PROG_PATH/"
-            fi
-            chmod +x "$PROG_PATH/$PROG_NAME"
-            if [ ! -z $VER_PARAM ]; then
-                echo "Version: $curr_ver -> $($PROG_PATH/$PROG_NAME $VER_PARAM 2>/dev/null||echo VERSION_NOT_EXIST)!"
-            fi
         fi
-        echo "Install Complete!"
-        popd >/dev/null
-        rm -rf "$tmp_dir"
+        chmod +x "$PROG_PATH/$PROG_NAME"
+    fi
+    echo "Install Complete!"
+    popd >/dev/null
+    rm -rf "$tmp_dir"
 
-        if [ ! -z $CMD_RELOAD ]; then
-            $CMD_RELOAD
-        fi
+    if [ ! -z $CMD_RELOAD ]; then
+        $CMD_RELOAD
     fi
 }
 
@@ -137,7 +126,6 @@ usage(){
     echo "    -o <NAME>        Package name";
     echo "    -d <DIR>         Dir inside package (set number as index; set '-' as packge name)";
     echo "    -e <EXP>         Expression for sed (only for '-d -')";
-    echo "    -v <VERSION>     Version param";
     echo "    -c <COMMAND>     Command for reload";
     echo "    -x <PROXY>       Proxy [protocol://]host[:port]";
 }
@@ -152,10 +140,9 @@ FILE_COPY=0
 PKG_NAME=
 PKG_DIR=
 SED_EXP=
-VER_PARAM=
 CMD_RELOAD=
 SET_PROXY=
-while getopts ":r:t:k:m:p:n:fo:d:e:v:c:x:" OPT; do
+while getopts ":r:t:k:m:p:n:fo:d:e:c:x:" OPT; do
     case $OPT in
         r)
             REPO=$OPTARG;
@@ -170,7 +157,7 @@ while getopts ":r:t:k:m:p:n:fo:d:e:v:c:x:" OPT; do
             MATCH_STAGE_2=$OPTARG;
             ;;
         p)
-            PROG_PATH=$(realpath -e $OPTARG);
+            PROG_PATH=$OPTARG;
             ;;
         n)
             PROG_NAME=$OPTARG;
@@ -186,9 +173,6 @@ while getopts ":r:t:k:m:p:n:fo:d:e:v:c:x:" OPT; do
             ;;
         e)
             SED_EXP=$OPTARG;
-            ;;
-        v)
-            VER_PARAM=$OPTARG;
             ;;
         c)
             CMD_RELOAD=$OPTARG;
