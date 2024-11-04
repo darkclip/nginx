@@ -118,4 +118,4 @@ WORKDIR /data
 VOLUME [ "/data" ]
 
 ENTRYPOINT [ "tini", "--" ]
-CMD ["service cron start && nginx -g 'daemon off;'"]
+CMD ["bash", "-c", "service cron start && nginx -g 'daemon off;'"]
