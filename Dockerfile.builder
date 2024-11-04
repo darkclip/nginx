@@ -4,9 +4,9 @@
 
 FROM debian:bookworm-slim
 
-ARG OPENRESTY_VERSION
-ARG LUA_VERSION
-ARG LUAROCKS_VERSION
+ARG OPENRESTY_VERSION=1.25.3.2
+ARG LUA_VERSION=5.4.7
+ARG LUAROCKS_VERSION=3.11.1
 
 RUN apt-get update \
     && apt-get install -y \
