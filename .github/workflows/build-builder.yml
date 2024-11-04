@@ -1,17 +1,18 @@
-name: build-docker
+name: build-builder
 
 on:
   push:
     branches:
       - "master"
     paths:
-      - ".github/workflows/build-docker.yml"
+      - ".github/workflows/build-builder.yml"
       - "scripts/patch-npm-nginx.sh"
-      - "Dockerfile"
+      - "scripts/install-github-release.sh"
+      - "builder.Dockerfile"
   workflow_dispatch:
 
 jobs:
-  build-docker:
+  build-builder:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -28,7 +29,6 @@ jobs:
           cp -rf build/* ./
           cd scripts
           ./patch-npm.sh
-          echo "DATE_TAG=$(date -I)" >> "$GITHUB_ENV"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -41,6 +41,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          file: Dockerfile.builder
           context: .
           push: true
           platforms: linux/amd64
@@ -49,5 +50,4 @@ jobs:
             LUA_VERSION=5.4.7
             LUAROCKS_VERSION=3.11.1
           tags: |
-            darkclip/nginx:latest
-            darkclip/nginx:${{ env.DATE_TAG }}
+            darkclip/nginx-builder:latest
