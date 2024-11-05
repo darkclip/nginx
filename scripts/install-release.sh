@@ -35,17 +35,12 @@ main(){
     if [ -z "$PROG_PATH" ]; then
         exit 0
     fi
-    echo "12/3" | awk -F'/' '{print $NF}'
     echo "Prepare tmp directory"
     pkgname=$(echo "$dl_url" | awk -F'/' '{print $NF}')
-    echo "test1"
     if [ ! -z "$PKG_NAME" ]; then
         pkgname="$PKG_NAME"
     fi
-    echo "test2"
     tmp_dir="/tmp/$pkgname-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)"
-    echo "test3"
-
     mkdir -p "$tmp_dir"
     pushd "$tmp_dir" >/dev/null 2>&1
     ext=$(echo "$pkgname" | awk -F'.' '{print $NF}')

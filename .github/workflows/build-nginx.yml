@@ -18,9 +18,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Prepare data
         run: |
-          ./scripts/install-release.sh -a ${{ secrets.MAXMIND_USER }}:${{ secrets.MAXMIND_TOKEN }} -u "https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz" -p "./geoip" -d 0 -n "GeoLite2-ASN.mmdb" -f
-          ./scripts/install-release.sh -a ${{ secrets.MAXMIND_USER }}:${{ secrets.MAXMIND_TOKEN }} -u "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz" -p "./geoip" -d 0 -n "GeoLite2-City.mmdb" -f
-          ./scripts/install-release.sh -a ${{ secrets.MAXMIND_USER }}:${{ secrets.MAXMIND_TOKEN }} -u "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz" -p "./geoip" -d 0 -n "GeoLite2-Country.mmdb" -f
           echo "DATE_TAG=$(date -I)" >> "$GITHUB_ENV"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -37,6 +34,9 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64
+          build-args: |
+            MAXMIND_USER=${{ secrets.MAXMIND_USER }}
+            MAXMIND_TOKEN=${{ secrets.MAXMIND_TOKEN }}
           tags: |
             darkclip/nginx:latest
             darkclip/nginx:${{ env.DATE_TAG }}

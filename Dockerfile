@@ -19,6 +19,8 @@ ARG LUA_VERSION=5.4.7
 ARG LUAROCKS_VERSION=3.11.1
 ARG CROWDSEC_VERSION=v1.0.5
 ARG ACME_VERSION=3.0.9
+ARG MAXMIND_USER
+ARG MAXMIND_TOKEN
 
 ENV OPENRESTY_VERSION=${OPENRESTY_VERSION}
 ENV LUA_VERSION=${LUA_VERSION}
@@ -40,7 +42,6 @@ ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
-COPY geoip/* /usr/share/geoip
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -61,6 +62,9 @@ RUN apt-get update \
     socat \
     libnginx-mod-http-geoip2 \
     libnginx-mod-stream-geoip2 \
+    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-ASN.mmdb" -f \
+    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-City.mmdb" -f \
+    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-Country.mmdb" -f \
     && apt-get clean \
     && apt-get update \
     && apt-get install -y gcc make git \
