@@ -18,8 +18,7 @@ RUN apt-get update \
     build-essential \
     libssl-dev \
     zlib1g-dev \
-    libpcre3-dev \
-    libgeoip-dev
+    libpcre3-dev
 
 COPY ./scripts/install-release.sh /tmp/
 

@@ -9,7 +9,7 @@ cd /tmp/openresty
 ./configure \
 	--prefix=/opt/openresty \
 	--sbin-path=/usr/sbin/nginx \
-	--modules-path=/opt/openresty/modules \
+	--modules-path=/usr/lib/nginx/modules \
 	--conf-path=/data/openresty/nginx.conf \
 	--error-log-path=/data/openresty/log/error.log \
 	--http-log-path=/data/openresty/log/access.log \
@@ -29,7 +29,6 @@ cd /tmp/openresty
 	--with-http_v3_module \
 	--with-http_realip_module \
 	--with-http_addition_module \
-	--with-http_geoip_module=dynamic \
 	--with-http_sub_module \
 	--with-http_dav_module \
 	--with-http_flv_module \
@@ -46,7 +45,6 @@ cd /tmp/openresty
 	--with-stream \
 	--with-stream_ssl_module \
 	--with-stream_realip_module \
-	--with-stream_geoip_module=dynamic \
 	--with-stream_ssl_preread_module \
 	--add-module=/tmp/openresty/nginx-rtmp-module
 
