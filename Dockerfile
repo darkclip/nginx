@@ -52,12 +52,9 @@ RUN apt-get update \
     xz-utils \
     jq \
     apache2-utils \
-    libncurses6 \
-    libreadline8 \
     openssl \
     zlib1g \
     libpcre3 \
-    libgeoip1 \
     perl \
     cron \
     socat \
