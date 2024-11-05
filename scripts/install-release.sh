@@ -16,7 +16,7 @@ main(){
         api_url="https://api.github.com/repos/$REPO/releases/$TAG"
         echo "API: $api_url"
         echo
-        candidates=$(curl $SET_PROXY -sSfL $api_url | grep -P "$MATCH_STAGE_1")
+        candidates=$(curl $SET_AUTH $SET_PROXY -sSfL $api_url | grep -P "$MATCH_STAGE_1")
         echo "Candidates:"
         echo "$candidates"
         echo
@@ -47,15 +47,15 @@ main(){
     ext_tar=$(echo "$pkgname" | awk -F'.' '{print $(NF-1)}')
     dirname=
     if (echo $ext | grep -i zip) >/dev/null 2>&1; then
-        curl $SET_PROXY -SfLo source_pkg.zip "$dl_url"
+        curl $SET_AUTH $SET_PROXY -SfLo source_pkg.zip "$dl_url"
         unzip -o source_pkg.zip
         dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
     elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) >/dev/null 2>&1; then
-        curl $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
+        curl $SET_AUTH $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
         tar -xvf source_pkg.$ext
         dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
     elif (echo $ext_tar | grep -i tar) >/dev/null 2>&1; then
-        curl $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
+        curl $SET_AUTH $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
         tar -xvf source_pkg.tar.$ext
         dirname=$(rev <<< "$pkgname" | cut -d '.' -f 3- | rev)
     else
@@ -132,6 +132,7 @@ usage(){
     echo "    -d <DIR>         Dir inside package (set number as index; set '-' as packge name)";
     echo "    -e <EXP>         Expression for sed (only for '-d -')";
     echo "    -c <COMMAND>     Command for reload";
+    echo "    -a <USER:PASS>   Auth user[:pass]";
     echo "    -x <PROXY>       Proxy [protocol://]host[:port]";
 }
 
@@ -147,8 +148,9 @@ PKG_NAME=
 PKG_DIR=
 SED_EXP=
 CMD_RELOAD=
+SET_AUTH=
 SET_PROXY=
-while getopts ":r:t:k:m:u:p:n:fo:d:e:c:x:" OPT; do
+while getopts ":r:t:k:m:u:p:n:fo:d:e:c:a:x:" OPT; do
     case $OPT in
         r)
             REPO=$OPTARG;
@@ -185,6 +187,9 @@ while getopts ":r:t:k:m:u:p:n:fo:d:e:c:x:" OPT; do
             ;;
         c)
             CMD_RELOAD=$OPTARG;
+            ;;
+        a)
+            SET_AUTH="-u $OPTARG";
             ;;
         x)
             SET_PROXY="-x $OPTARG";

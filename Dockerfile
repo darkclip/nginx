@@ -40,6 +40,7 @@ ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
+COPY geoip/* /usr/share/geoip
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -58,6 +59,8 @@ RUN apt-get update \
     perl \
     cron \
     socat \
+    libnginx-mod-http-geoip2 \
+    libnginx-mod-stream-geoip2 \
     && apt-get clean \
     && apt-get update \
     && apt-get install -y gcc make git \
