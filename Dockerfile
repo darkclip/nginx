@@ -57,7 +57,7 @@ RUN apt-get update \
     openssl \
     zlib1g \
     libpcre3 \
-    libgeoip \
+    libgeoip1 \
     perl \
     cron \
     socat \
