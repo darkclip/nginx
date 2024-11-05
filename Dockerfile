@@ -27,17 +27,17 @@ ENV CROWDSEC_VERSION=${CROWDSEC_VERSION}
 ENV ACME_VERSION=${ACME_VERSION}
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-ENV LUALIB=/etc/nginx/lualib
-ENV NGINX_CONF=/data/nginx/conf.d
-ENV NGINX_LOG=/data/nginx/log
-ENV NGINX_CACHE=/data/nginx/cache
+ENV LUALIB=/opt/openresty/lualib
+ENV NGINX_CONF=/data/openresty/conf.d
+ENV NGINX_LOG=/data/openresty/log
+ENV NGINX_CACHE=/data/openresty/cache
 ENV CROWDSEC_DATA=/data/crowdsec
 ENV ACME_HOME=/opt/acme
 ENV LE_WORKING_DIR=/opt/acme
-ENV ACME_CONFIG_HOME=/data/acme/conf
-ENV LE_CONFIG_HOME=/data/acme/conf
-ENV CERT_HOME=/data/acme/certs
-ENV PATH=${ACME_HOME}:${PATH}
+ENV ACME_CONFIG_HOME=/data/acme
+ENV LE_CONFIG_HOME=/data/acme
+ENV CERT_HOME=/data/certs
+ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
 
@@ -47,22 +47,22 @@ RUN apt-get update \
     ca-certificates \
     curl \
     tzdata \
-    xz-utils \
-    zlib1g \
-    unzip \
     nano \
-    openssl \
-    apache2-utils \
+    unzip \
+    xz-utils \
     jq \
+    apache2-utils \
     libncurses6 \
-    libpcre3 \
     libreadline8 \
+    openssl \
+    zlib1g \
+    libpcre3 \
     perl \
     cron \
     socat \
     && apt-get clean \
     && apt-get update \
-    && apt-get install -y wget gettext libmaxminddb-dev gcc make git \
+    && apt-get install -y gcc make git \
     && pushd /tmp/lua \
     && make install \
     && popd \
@@ -85,7 +85,7 @@ RUN apt-get update \
     && ./acme.sh --install --no-profile --force --home "${ACME_HOME}" --config-home "${ACME_CONFIG_HOME}" --cert-home "${CERT_HOME}" \
     && popd \
     && acme.sh --set-default-ca --server letsencrypt \
-    && apt-get remove -y wget gettext libmaxminddb-dev gcc make git \
+    && apt-get remove -y gcc make git \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
