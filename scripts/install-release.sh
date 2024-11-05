@@ -16,7 +16,7 @@ main(){
         api_url="https://api.github.com/repos/$REPO/releases/$TAG"
         echo "API: $api_url"
         echo
-        candidates=$(curl $SET_AUTH $SET_PROXY -sSfL $api_url | grep -P "$MATCH_STAGE_1")
+        candidates=$(curl $SET_AUTH $SET_PROXY -sSfL "$api_url" | grep -P "$MATCH_STAGE_1")
         echo "Candidates:"
         echo "$candidates"
         echo
@@ -35,7 +35,7 @@ main(){
     if [ -z "$PROG_PATH" ]; then
         exit 0
     fi
-    echo "Downloading..."
+    echo "Prepare tmp directory"
     pkgname=$(echo "$dl_url" | awk -F'/' '{print $NF}')
     if [ ! -z "$PKG_NAME" ]; then
         pkgname="$PKG_NAME"
@@ -46,6 +46,7 @@ main(){
     ext=$(echo "$pkgname" | awk -F'.' '{print $NF}')
     ext_tar=$(echo "$pkgname" | awk -F'.' '{print $(NF-1)}')
     dirname=
+    echo "Downloading..."
     if (echo $ext | grep -i zip) >/dev/null 2>&1; then
         curl $SET_AUTH $SET_PROXY -SfLo source_pkg.zip "$dl_url"
         unzip -o source_pkg.zip
@@ -62,6 +63,7 @@ main(){
         echo "Unknown format: $pkgname"
         exit 1
     fi
+    echo "Inflation complete"
     rm source_pkg.*
     if [ ! -z "$PKG_DIR" ]; then
         if [ "$PKG_DIR" = "-" ]; then
@@ -78,12 +80,12 @@ main(){
             cd "$PKG_DIR"
         fi
     fi
-
     CWD=$(pwd)
     if [ ${CWD:0:5} != "/tmp/" ]; then
         echo "Wrong dir inside package!"
         exit 1
     fi
+
     PROG_PATH=$(realpath "$PROG_PATH");
     echo
     echo "Installing..."
