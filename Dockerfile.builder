@@ -18,11 +18,9 @@ RUN apt-get update \
     build-essential \
     libncurses-dev \
     libreadline-dev \
-    openssl \
     zlib1g-dev \
     libpcre3-dev \
-    libssl-dev \
-    libgeoip-dev
+    libssl-dev
 
 COPY ./scripts/install-release.sh /tmp/
 

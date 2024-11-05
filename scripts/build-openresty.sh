@@ -29,7 +29,7 @@ cd /tmp/openresty
 	--with-http_v3_module \
 	--with-http_realip_module \
 	--with-http_addition_module \
-	--with-http_geoip_module \
+	--with-http_geoip_module=dynamic \
 	--with-http_sub_module \
 	--with-http_dav_module \
 	--with-http_flv_module \
@@ -46,7 +46,7 @@ cd /tmp/openresty
 	--with-stream \
 	--with-stream_ssl_module \
 	--with-stream_realip_module \
-	--with-stream_geoip_module \
+	--with-stream_geoip_module=dynamic \
 	--with-stream_ssl_preread_module \
 	--add-module=/tmp/openresty/nginx-rtmp-module
 
