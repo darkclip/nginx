@@ -7,7 +7,7 @@ on:
     paths:
       - ".github/workflows/build-builder.yml"
       - "scripts/build-openresty.sh"
-      - "builder.Dockerfile"
+      - "Dockerfile.builder"
   workflow_dispatch:
 
 jobs:
