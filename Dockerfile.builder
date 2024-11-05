@@ -15,8 +15,10 @@ RUN apt-get update \
     git \
     unzip \
     xz-utils \
-    zlib1g-dev \
     build-essential \
+    libncurses-dev \
+    libreadline-dev \
+    openssl \
     libpcre3-dev \
     libssl-dev \
     libgeoip-dev
