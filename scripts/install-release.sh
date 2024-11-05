@@ -41,8 +41,10 @@ main(){
         pkgname="$PKG_NAME"
     fi
     tmp_dir="/tmp/$pkgname-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)"
+    echo "test1"
     mkdir -p "$tmp_dir"
     pushd "$tmp_dir" >/dev/null 2>&1
+    echo "test2"
     ext=$(echo "$pkgname" | awk -F'.' '{print $NF}')
     ext_tar=$(echo "$pkgname" | awk -F'.' '{print $(NF-1)}')
     dirname=
