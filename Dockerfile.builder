@@ -12,16 +12,13 @@ RUN apt-get update \
     && apt-get install -y \
     ca-certificates \
     curl \
-    build-essential \
-    libncurses-dev \
-    libpcre3-dev \
-    libreadline-dev \
-    libssl-dev \
-    openssl \
+    git \
+    unzip \
     xz-utils \
     zlib1g-dev \
-    unzip \
-    git \
+    build-essential \
+    libpcre3-dev \
+    libssl-dev \
     libgeoip-dev
 
 COPY ./scripts/install-release.sh /tmp/
