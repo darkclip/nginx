@@ -35,6 +35,7 @@ main(){
     if [ -z "$PROG_PATH" ]; then
         exit 0
     fi
+    echo "12/3" | awk -F'/' '{print $NF}'
     echo "Prepare tmp directory"
     pkgname=$(echo "$dl_url" | awk -F'/' '{print $NF}')
     echo "test1"
