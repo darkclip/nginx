@@ -10,16 +10,16 @@ cd /tmp/openresty
 	--prefix=/opt/openresty \
 	--sbin-path=/usr/sbin/nginx \
 	--modules-path=/opt/openresty/modules \
-	--conf-path=/data/nginx/nginx.conf \
-	--error-log-path=/data/nginx/log/error.log \
-	--http-log-path=/data/nginx/log/access.log \
+	--conf-path=/data/openresty/nginx.conf \
+	--error-log-path=/data/openresty/log/error.log \
+	--http-log-path=/data/openresty/log/access.log \
 	--pid-path=/var/run/nginx.pid \
 	--lock-path=/var/run/nginx.lock \
-	--http-client-body-temp-path=/data/nginx/cache/client_temp \
-	--http-proxy-temp-path=/data/nginx/cache/proxy_temp \
-	--http-fastcgi-temp-path=/data/nginx/cache/fastcgi_temp \
-	--http-uwsgi-temp-path=/data/nginx/cache/uwsgi_temp \
-	--http-scgi-temp-path=/data/nginx/cache/scgi_temp \
+	--http-client-body-temp-path=/data/openresty/cache/client_temp \
+	--http-proxy-temp-path=/data/openresty/cache/proxy_temp \
+	--http-fastcgi-temp-path=/data/openresty/cache/fastcgi_temp \
+	--http-uwsgi-temp-path=/data/openresty/cache/uwsgi_temp \
+	--http-scgi-temp-path=/data/openresty/cache/scgi_temp \
 	--user=nginx \
 	--group=nginx \
 	--with-compat \

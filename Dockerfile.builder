@@ -22,7 +22,7 @@ RUN apt-get update \
     zlib1g-dev \
     unzip \
     git \
-    libmaxminddb-dev
+    libgeoip-dev
 
 COPY ./scripts/install-release.sh /tmp/
 
