@@ -91,8 +91,8 @@ RUN apt-get update \
     && apt-get remove -y gcc make gettext \
     && apt-get autoremove -y \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/cache/* /var/log/* /tmp/* /var/lib/dpkg/status-old
+    && rm -rf /etc/nginx \
+    && rm -rf /tmp/* /var/cache/* /var/log/* /var/lib/apt/lists/* /var/lib/dpkg/status-old
 
 WORKDIR /data
 VOLUME [ "/data" ]
