@@ -65,9 +65,7 @@ RUN apt-get update \
     && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-ASN.mmdb" -f \
     && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-City.mmdb" -f \
     && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-Country.mmdb" -f \
-    && apt-get clean \
-    && apt-get update \
-    && apt-get install -y gcc make git \
+    && apt-get install -y gcc make gettext \
     && pushd /tmp/lua \
     && make install \
     && popd \
@@ -90,7 +88,7 @@ RUN apt-get update \
     && ./acme.sh --install --no-profile --force --home "${ACME_HOME}" --config-home "${ACME_CONFIG_HOME}" --cert-home "${CERT_HOME}" \
     && popd \
     && acme.sh --set-default-ca --server letsencrypt \
-    && apt-get remove -y gcc make git \
+    && apt-get remove -y gcc make gettext \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \

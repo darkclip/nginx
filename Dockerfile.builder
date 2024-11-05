@@ -12,6 +12,7 @@ RUN apt-get update \
     && apt-get install -y \
     ca-certificates \
     curl \
+    nano \
     git \
     unzip \
     xz-utils \
