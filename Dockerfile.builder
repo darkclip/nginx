@@ -16,8 +16,6 @@ RUN apt-get update \
     unzip \
     xz-utils \
     build-essential \
-    libncurses-dev \
-    libreadline-dev \
     libssl-dev \
     zlib1g-dev \
     libpcre3-dev \
