@@ -19,6 +19,7 @@ RUN apt-get update \
     libncurses-dev \
     libreadline-dev \
     openssl \
+    zlib1g-dev \
     libpcre3-dev \
     libssl-dev \
     libgeoip-dev
