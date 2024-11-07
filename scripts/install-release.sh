@@ -21,15 +21,15 @@ main(){
         echo "$candidates"
         echo
         dl_url=$(echo "$candidates" | grep -P "$MATCH_STAGE_2" | cut -d '"' -f 4)
+        echo "From:"
+        echo "$dl_url"
+        echo
     else
         dl_url="$DD_URL"
     fi
     if [ $(echo -e "$dl_url" | wc -l) -ne 1 ] || [ -z "$dl_url" ]; then
         exit 0
     fi
-    echo "From:"
-    echo "$dl_url"
-    echo
 
 
     if [ -z "$PROG_PATH" ]; then
@@ -47,24 +47,28 @@ main(){
     ext_tar=$(echo "$pkgname" | awk -F'.' '{print $(NF-1)}')
     dirname=
     echo "Downloading..."
-    if (echo $ext | grep -i zip) >/dev/null 2>&1; then
-        curl $SET_AUTH $SET_PROXY -SfLo source_pkg.zip "$dl_url"
-        unzip -o source_pkg.zip
-        dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
-    elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) >/dev/null 2>&1; then
-        curl $SET_AUTH $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
-        tar -xvf source_pkg.$ext
-        dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
-    elif (echo $ext_tar | grep -i tar) >/dev/null 2>&1; then
-        curl $SET_AUTH $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
-        tar -xvf source_pkg.tar.$ext
-        dirname=$(rev <<< "$pkgname" | cut -d '.' -f 3- | rev)
+    if [ $NO_INFLATE -eq 1 ]; then
+        curl $SET_AUTH $SET_PROXY -SfLo $pkgname "$dl_url"
     else
-        echo "Unknown format: $pkgname"
-        exit 1
+        if (echo $ext | grep -i zip) >/dev/null 2>&1; then
+            curl $SET_AUTH $SET_PROXY -SfLo source_pkg.zip "$dl_url"
+            unzip -o source_pkg.zip
+            dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
+        elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) >/dev/null 2>&1; then
+            curl $SET_AUTH $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
+            tar -xvf source_pkg.$ext
+            dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
+        elif (echo $ext_tar | grep -i tar) >/dev/null 2>&1; then
+            curl $SET_AUTH $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
+            tar -xvf source_pkg.tar.$ext
+            dirname=$(rev <<< "$pkgname" | cut -d '.' -f 3- | rev)
+        else
+            echo "Unknown format: $pkgname"
+            exit 1
+        fi
+        echo "Inflation complete"
+        rm source_pkg.*
     fi
-    echo "Inflation complete"
-    rm source_pkg.*
     if [ ! -z "$PKG_DIR" ]; then
         if [ "$PKG_DIR" = "-" ]; then
             if [ -z $SED_EXP ]; then
@@ -127,6 +131,7 @@ usage(){
     echo "    -k <KEY>         Match stage 1 with regexp (default: $DEFAULT_MATCH_STAGE_1)";
     echo "    -m <MATCH>       Match stage 2 with regexp";
     echo "    -u <URL>         Direct download url (bypass query repo)";
+    echo "    -b               Do not inflate";
     echo "    -p <PATH>        Program path";
     echo "    -n <NAME>        Program name";
     echo "    -f               Copy program name file only (when -n is set)";
@@ -143,6 +148,7 @@ TAG=$DEFAULT_RELEASE
 MATCH_STAGE_1=$DEFAULT_MATCH_STAGE_1
 MATCH_STAGE_2=
 DD_URL=
+NO_INFLATE=0
 PROG_PATH=
 PROG_NAME=
 FILE_COPY=0
@@ -152,7 +158,7 @@ SED_EXP=
 CMD_RELOAD=
 SET_AUTH=
 SET_PROXY=
-while getopts ":r:t:k:m:u:p:n:fo:d:e:c:a:x:" OPT; do
+while getopts ":r:t:k:m:u:bp:n:fo:d:e:c:a:x:" OPT; do
     case $OPT in
         r)
             REPO=$OPTARG;
@@ -168,6 +174,9 @@ while getopts ":r:t:k:m:u:p:n:fo:d:e:c:a:x:" OPT; do
             ;;
         u)
             DD_URL=$OPTARG;
+            ;;
+        b)
+            NO_INFLATE=1;
             ;;
         p)
             PROG_PATH=$OPTARG;
