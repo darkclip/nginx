@@ -106,6 +106,19 @@ main(){
     if [ -z "$PROG_NAME" ]; then
         cp -fr * "$PROG_PATH/"
     else
+        command -v md5sum &>/dev/null
+        mflag=$?
+        if [ $mflag -eq 0 ]; then
+            echo "Version check"
+            old_hash=$(md5sum -bz "$PROG_PATH/$PROG_NAME" | awk '{print $1}')
+            new_hash=$(md5sum -bz "$PROG_NAME" | awk '{print $1}')
+            if [ "$new_hash" = "$old_hash" ]; then
+                echo "No need to update."
+                popd >/dev/null
+                rm -rf "$tmp_dir"
+                exit 0
+            fi
+        fi
         if [ $FILE_COPY -eq 1 ]; then
             cp -f "$PROG_NAME" "$PROG_PATH/"
         else
