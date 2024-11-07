@@ -42,7 +42,7 @@ main(){
     fi
     tmp_dir="/tmp/$pkgname-$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)"
     mkdir -p "$tmp_dir"
-    pushd "$tmp_dir" >/dev/null 2>&1
+    pushd "$tmp_dir" >/dev/null
     ext=$(echo "$pkgname" | awk -F'.' '{print $NF}')
     ext_tar=$(echo "$pkgname" | awk -F'.' '{print $(NF-1)}')
     dirname=
@@ -50,15 +50,15 @@ main(){
     if [ $NO_INFLATE -eq 1 ]; then
         curl $SET_AUTH $SET_PROXY -SfLo $pkgname "$dl_url"
     else
-        if (echo $ext | grep -i zip) >/dev/null 2>&1; then
+        if (echo $ext | grep -i zip) &>/dev/null; then
             curl $SET_AUTH $SET_PROXY -SfLo source_pkg.zip "$dl_url"
             unzip -o source_pkg.zip
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
-        elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) >/dev/null 2>&1; then
+        elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) &>/dev/null; then
             curl $SET_AUTH $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
             tar -xvf source_pkg.$ext
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
-        elif (echo $ext_tar | grep -i tar) >/dev/null 2>&1; then
+        elif (echo $ext_tar | grep -i tar) &>/dev/null; then
             curl $SET_AUTH $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
             tar -xvf source_pkg.tar.$ext
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 3- | rev)
