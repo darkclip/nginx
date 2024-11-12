@@ -106,9 +106,7 @@ main(){
     if [ -z "$PROG_NAME" ]; then
         cp -fr * "$PROG_PATH/"
     else
-        command -v md5sum &>/dev/null
-        mflag=$?
-        if [ $mflag -eq 0 ]; then
+        if command -v md5sum &>/dev/null; then
             echo "Version check"
             old_hash=$(md5sum -bz "$PROG_PATH/$PROG_NAME" | awk '{print $1}')
             new_hash=$(md5sum -bz "$PROG_NAME" | awk '{print $1}')
