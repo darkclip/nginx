@@ -64,29 +64,58 @@ main(){
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 3- | rev)
         else
             echo "Unknown format: $pkgname"
+            popd >/dev/null
+            rm -rf "$tmp_dir"
             exit 1
         fi
         echo "Inflation complete"
         rm source_pkg.*
     fi
     if [ ! -z "$PKG_DIR" ]; then
+        echo
+        echo "Source dir:"
         if [ "$PKG_DIR" = "-" ]; then
             if [ -z $SED_EXP ]; then
+                echo "$dirname"
                 cd "$dirname"
             else
-                cd "$(echo $dirname | sed -E $SED_EXP)"
+                current_dir=$(echo $dirname | sed -E $SED_EXP)
+                echo "$current_dir"
+                cd "$current_dir"
             fi
-        elif [ $PKG_DIR -ge 0 ]; then
-            dirs=$(ls -l|awk '/^d/ {print $NF}')
-            arr_dirs=($dirs)
-            cd "${arr_dirs[$PKG_DIR]}"
-        else
+        elif (echo "$PKG_DIR"|grep -i "/") &>/dev/null; then
+            echo "$PKG_DIR"
             cd "$PKG_DIR"
+        else
+            indices=($PKG_DIR)
+            for index in ${indices[@]}; do
+                if [ "$index" -ge 0 ] &>/dev/null; then
+                    dirs=$(ls -l|awk '/^d/ {print $NF}')
+                    arr_dirs=($dirs)
+                    current_dir=${arr_dirs[$index]}
+                    if [ -d "$current_dir" ]; then
+                        echo "$current_dir"
+                        cd "$current_dir"
+                    else
+                        echo "Wrong dir inside package!"
+                        popd >/dev/null
+                        rm -rf "$tmp_dir"
+                        exit 1
+                    fi
+                else
+                    echo "Wrong dir indices!"
+                    popd >/dev/null
+                    rm -rf "$tmp_dir"
+                    exit 1
+                fi
+            done
         fi
     fi
     CWD=$(pwd)
     if [ ${CWD:0:5} != "/tmp/" ]; then
         echo "Wrong dir inside package!"
+        popd >/dev/null
+        rm -rf "$tmp_dir"
         exit 1
     fi
 
@@ -98,6 +127,8 @@ main(){
     if [ ! -d "$PROG_PATH" ]; then
         if [ -e "$PROG_PATH" ]; then
             echo "Program path is not directory!"
+            popd >/dev/null
+            rm -rf "$tmp_dir"
             exit 1
         else
             mkdir -p "$PROG_PATH"
@@ -147,7 +178,7 @@ usage(){
     echo "    -n <NAME>        Program name";
     echo "    -f               Copy program name file only (when -n is set)";
     echo "    -o <NAME>        Package name";
-    echo "    -d <DIR>         Dir inside package (set number as index; set '-' as packge name)";
+    echo "    -d <DIR>         Dir inside package (set path ends with '/'; set numbers as indices; set '-' as packge name)";
     echo "    -e <EXP>         Expression for sed (only for '-d -')";
     echo "    -c <COMMAND>     Command for reload";
     echo "    -a <USER:PASS>   Auth user[:pass]";
