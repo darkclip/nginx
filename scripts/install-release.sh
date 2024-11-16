@@ -83,9 +83,6 @@ main(){
                 echo "$current_dir"
                 cd "$current_dir"
             fi
-        elif (echo "$PKG_DIR"|grep -i "/") &>/dev/null; then
-            echo "$PKG_DIR"
-            cd "$PKG_DIR"
         else
             indices=($PKG_DIR)
             for index in ${indices[@]}; do
@@ -93,17 +90,14 @@ main(){
                     dirs=$(ls -l|awk '/^d/ {print $NF}')
                     arr_dirs=($dirs)
                     current_dir=${arr_dirs[$index]}
-                    if [ -d "$current_dir" ]; then
-                        echo "$current_dir"
-                        cd "$current_dir"
-                    else
-                        echo "Wrong dir inside package!"
-                        popd >/dev/null
-                        rm -rf "$tmp_dir"
-                        exit 1
-                    fi
                 else
-                    echo "Wrong dir indices!"
+                    current_dir=$index
+                fi
+                if [ -d "$current_dir" ]; then
+                    echo "$current_dir"
+                    cd "$current_dir"
+                else
+                    echo "Wrong dir inside package!"
                     popd >/dev/null
                     rm -rf "$tmp_dir"
                     exit 1
@@ -178,7 +172,11 @@ usage(){
     echo "    -n <NAME>        Program name";
     echo "    -f               Copy program name file only (when -n is set)";
     echo "    -o <NAME>        Package name";
-    echo "    -d <DIR>         Dir inside package (set path ends with '/'; set numbers as indices; set '-' as packge name)";
+    echo "    -d <DIR>         Dir inside package:";
+    echo "                         '-' as packge name without extension";
+    echo "                         space separated stirng mixed with:";
+    echo "                             number as index";
+    echo "                             string as name";
     echo "    -e <EXP>         Expression for sed (only for '-d -')";
     echo "    -c <COMMAND>     Command for reload";
     echo "    -a <USER:PASS>   Auth user[:pass]";
