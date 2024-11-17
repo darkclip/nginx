@@ -47,7 +47,7 @@ main(){
     ext_tar=$(echo "$pkgname" | awk -F'.' '{print $(NF-1)}')
     dirname=
     echo "Downloading..."
-    if [ $NO_INFLATE -eq 1 ]; then
+    if $NO_INFLATE; then
         curl $SET_AUTH $SET_PROXY -SfLo $pkgname "$dl_url"
     else
         if (echo $ext | grep -i zip) &>/dev/null; then
@@ -142,7 +142,7 @@ main(){
                 exit 0
             fi
         fi
-        if [ $FILE_COPY -eq 1 ]; then
+        if $FILE_COPY; then
             cp -f "$PROG_NAME" "$PROG_PATH/"
         else
             cp -fr * "$PROG_PATH/"
@@ -188,10 +188,10 @@ TAG=$DEFAULT_RELEASE
 MATCH_STAGE_1=$DEFAULT_MATCH_STAGE_1
 MATCH_STAGE_2=
 DD_URL=
-NO_INFLATE=0
+NO_INFLATE=false
 PROG_PATH=
 PROG_NAME=
-FILE_COPY=0
+FILE_COPY=false
 PKG_NAME=
 PKG_DIR=
 SED_EXP=
@@ -216,7 +216,7 @@ while getopts ":r:t:k:m:u:bp:n:fo:d:e:c:a:x:" OPT; do
             DD_URL=$OPTARG;
             ;;
         b)
-            NO_INFLATE=1;
+            NO_INFLATE=true;
             ;;
         p)
             PROG_PATH=$OPTARG;
@@ -225,7 +225,7 @@ while getopts ":r:t:k:m:u:bp:n:fo:d:e:c:a:x:" OPT; do
             PROG_NAME=$OPTARG;
             ;;
         f)
-            FILE_COPY=1;
+            FILE_COPY=true;
             ;;
         o)
             PKG_NAME=$OPTARG;
