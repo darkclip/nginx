@@ -6,6 +6,7 @@ DEFAULT_MATCH_STAGE_1="browser_download_url"
 
 
 main(){
+    echo
     if [ -z "$REPO" ] && [ -z "$DD_URL" ]; then
         usage
         exit 1
@@ -13,17 +14,19 @@ main(){
     if [ -z "$DD_URL" ]; then
         echo "Query for $REPO"
         echo
-        api_url="https://api.github.com/repos/$REPO/releases/$TAG"
-        echo "API: $api_url"
-        echo
-        candidates=$(curl $SET_AUTH $SET_PROXY -sSfL "$api_url" | grep -P "$MATCH_STAGE_1")
-        echo "Candidates:"
-        echo "$candidates"
-        echo
-        dl_url=$(echo "$candidates" | grep -P "$MATCH_STAGE_2" | cut -d '"' -f 4)
-        echo "From:"
-        echo "$dl_url"
-        echo
+        if $VERBOSE; then
+            api_url="https://api.github.com/repos/$REPO/releases/$TAG"
+            echo "API: $api_url"
+            echo
+            candidates=$(curl $SET_AUTH $SET_PROXY -sSfL "$api_url" | grep -P "$MATCH_STAGE_1")
+            echo "Candidates:"
+            echo "$candidates"
+            echo
+            dl_url=$(echo "$candidates" | grep -P "$MATCH_STAGE_2" | cut -d '"' -f 4)
+            echo "From:"
+            echo "$dl_url"
+            echo
+        fi
     else
         dl_url="$DD_URL"
     fi
@@ -52,15 +55,15 @@ main(){
     else
         if (echo $ext | grep -i zip) &>/dev/null; then
             curl $SET_AUTH $SET_PROXY -SfLo source_pkg.zip "$dl_url"
-            unzip -o source_pkg.zip
+            unzip -o source_pkg.zip >/dev/null
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
         elif (echo $ext | grep -i tar) || (echo $ext | grep -i tgz) &>/dev/null; then
             curl $SET_AUTH $SET_PROXY -SfLo source_pkg.$ext "$dl_url"
-            tar -xvf source_pkg.$ext
+            tar -xvf source_pkg.$ext >/dev/null
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 2- | rev)
         elif (echo $ext_tar | grep -i tar) &>/dev/null; then
             curl $SET_AUTH $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
-            tar -xvf source_pkg.tar.$ext
+            tar -xvf source_pkg.tar.$ext >/dev/null
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 3- | rev)
         else
             echo "Unknown format: $pkgname"
@@ -72,16 +75,27 @@ main(){
         rm source_pkg.*
     fi
     if [ ! -z "$PKG_DIR" ]; then
-        echo
-        echo "Source dir:"
+        if $VERBOSE; then
+            echo
+            echo "Source dir:"
+        fi
         if [ "$PKG_DIR" = "-" ]; then
             if [ -z $SED_EXP ]; then
-                echo "$dirname"
-                cd "$dirname"
+                current_dir=$dirname
             else
                 current_dir=$(echo $dirname | sed -E $SED_EXP)
-                echo "$current_dir"
+            fi
+            if [ -d "$current_dir" ]; then
+                if $VERBOSE; then
+                    echo "$current_dir"
+                fi
                 cd "$current_dir"
+            else
+                else
+                echo "Wrong dir inside package!"
+                popd >/dev/null
+                rm -rf "$tmp_dir"
+                exit 1
             fi
         else
             indices=($PKG_DIR)
@@ -94,7 +108,9 @@ main(){
                     current_dir=$index
                 fi
                 if [ -d "$current_dir" ]; then
-                    echo "$current_dir"
+                    if $VERBOSE; then
+                        echo "$current_dir"
+                    fi
                     cd "$current_dir"
                 else
                     echo "Wrong dir inside package!"
@@ -179,6 +195,7 @@ usage(){
     echo "                             string as name";
     echo "    -e <EXP>         Expression for sed (only for '-d -')";
     echo "    -c <COMMAND>     Command for reload";
+    echo "    -v               Verbose";
     echo "    -a <USER:PASS>   Auth user[:pass]";
     echo "    -x <PROXY>       Proxy [protocol://]host[:port]";
 }
@@ -196,9 +213,10 @@ PKG_NAME=
 PKG_DIR=
 SED_EXP=
 CMD_RELOAD=
+VERBOSE=false
 SET_AUTH=
 SET_PROXY=
-while getopts ":r:t:k:m:u:bp:n:fo:d:e:c:a:x:" OPT; do
+while getopts ":r:t:k:m:u:bp:n:fo:d:e:c:va:x:" OPT; do
     case $OPT in
         r)
             REPO=$OPTARG;
@@ -238,6 +256,9 @@ while getopts ":r:t:k:m:u:bp:n:fo:d:e:c:a:x:" OPT; do
             ;;
         c)
             CMD_RELOAD=$OPTARG;
+            ;;
+        v)
+            VERBOSE=true;
             ;;
         a)
             SET_AUTH="-u $OPTARG";
