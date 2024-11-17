@@ -14,15 +14,19 @@ main(){
     if [ -z "$DD_URL" ]; then
         echo "Query for $REPO"
         echo
-        if $VERBOSE; then
             api_url="https://api.github.com/repos/$REPO/releases/$TAG"
+        if $VERBOSE; then
             echo "API: $api_url"
             echo
-            candidates=$(curl $SET_AUTH $SET_PROXY -sSfL "$api_url" | grep -P "$MATCH_STAGE_1")
+        fi
+        candidates=$(curl $SET_AUTH $SET_PROXY -sSfL "$api_url" | grep -P "$MATCH_STAGE_1")
+        if $VERBOSE; then
             echo "Candidates:"
             echo "$candidates"
             echo
-            dl_url=$(echo "$candidates" | grep -P "$MATCH_STAGE_2" | cut -d '"' -f 4)
+        fi
+        dl_url=$(echo "$candidates" | grep -P "$MATCH_STAGE_2" | cut -d '"' -f 4)
+        if $VERBOSE; then
             echo "From:"
             echo "$dl_url"
             echo
@@ -91,7 +95,6 @@ main(){
                 fi
                 cd "$current_dir"
             else
-                else
                 echo "Wrong dir inside package!"
                 popd >/dev/null
                 rm -rf "$tmp_dir"
