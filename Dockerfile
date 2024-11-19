@@ -44,7 +44,7 @@ ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 COPY --from=nginxbuilder /tmp /tmp
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+    && apt-get install --no-install-recommends -y \
     tini \
     ca-certificates \
     curl \

@@ -9,7 +9,7 @@ ARG LUA_VERSION=5.4.7
 ARG LUAROCKS_VERSION=3.11.1
 
 RUN apt-get update \
-    && apt-get install -y \
+    && apt-get install --no-install-recommends -y \
     ca-certificates \
     curl \
     nano \

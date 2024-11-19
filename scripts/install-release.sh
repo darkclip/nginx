@@ -69,6 +69,20 @@ main(){
             curl $SET_AUTH $SET_PROXY -SfLo source_pkg.tar.$ext "$dl_url"
             tar -xvf source_pkg.tar.$ext >/dev/null
             dirname=$(rev <<< "$pkgname" | cut -d '.' -f 3- | rev)
+        elif (echo $ext | grep -i deb) &>/dev/null; then
+            if command -v dpkg &>/dev/null; then
+                curl $SET_AUTH $SET_PROXY -SfLo source_pkg.deb "$dl_url"
+                dpkg -i source_pkg.deb
+                echo "Install Complete!"
+                popd >/dev/null
+                rm -rf "$tmp_dir"
+                exit 0
+            else
+                echo "Not Debian System"
+                popd >/dev/null
+                rm -rf "$tmp_dir"
+                exit 1
+            fi
         else
             echo "Unknown format: $pkgname"
             popd >/dev/null
