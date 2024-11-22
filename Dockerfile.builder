@@ -39,5 +39,5 @@ RUN apt-get update \
     && ./build/scripts/build-openresty.sh \
     && apt-get autoremove -y \
     && apt-get clean \
-    && rm -rf /build
+    && rm -rf /build /var/cache/* /var/log/* /var/lib/apt/lists/* /var/lib/dpkg/status-old
 
