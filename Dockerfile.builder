@@ -25,7 +25,6 @@ RUN apt-get update \
     zlib1g-dev \
     libpcre3-dev \
     libreadline-dev \
-    && mkdir tmp \
     && mv /build/scripts/install-release.sh /tmp/ \
     && mv /build/rootfs /tmp/ \
     && ./tmp/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /tmp/lua -d 0 \
