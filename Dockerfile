@@ -89,13 +89,15 @@ RUN apt-get update \
     && popd \
     && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y gcc make gettext \
+    && cp /data /data-install \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /etc/nginx \
     && rm -rf /tmp/* /var/cache/* /var/log/* /var/lib/apt/lists/* /var/lib/dpkg/status-old
 
+COPY rootfs /
 WORKDIR /data
 VOLUME [ "/data" ]
 
 ENTRYPOINT [ "tini", "--" ]
-CMD ["bash", "-c", "service cron start && nginx -g 'daemon off;'"]
+CMD ["init.sh"]

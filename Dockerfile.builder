@@ -21,7 +21,7 @@ RUN apt-get update \
     zlib1g-dev \
     libpcre3-dev
 
-COPY ./scripts/install-release.sh /tmp/
+COPY scripts/install-release.sh scripts/build-openresty.sh /tmp/
 
 # Lua build
 RUN  /tmp/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /tmp/lua -d 0 \
@@ -35,6 +35,5 @@ RUN /tmp/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luar
     && make
 
 # Nginx build
-COPY ./scripts/build-openresty.sh /tmp/build-openresty.sh
 RUN /tmp/build-openresty.sh
 
