@@ -24,9 +24,9 @@ RUN apt-get update \
     libssl-dev \
     zlib1g-dev \
     libpcre3-dev \
-    libreadline-dev\
-    mkdir stage \
-    mv /tmp/scripts/install-release.sh /stage \
+    libreadline-dev \
+    && mkdir stage \
+    && mv /tmp/scripts/install-release.sh /stage \
     && /stage/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /stage/lua -d 0 \
     && pushd /stage/lua \
     && make linux test \
