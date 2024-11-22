@@ -57,6 +57,7 @@ RUN apt-get update \
     openssl \
     zlib1g \
     libpcre3 \
+    libreadline8 \
     perl \
     cron \
     socat \
