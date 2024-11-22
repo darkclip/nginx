@@ -100,4 +100,4 @@ WORKDIR /data
 VOLUME [ "/data" ]
 
 ENTRYPOINT [ "tini", "--" ]
-CMD [ "bash", "-c", "init.sh" ]
+CMD [ "init.sh" ]
