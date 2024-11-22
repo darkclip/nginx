@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-./stage/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -p /stage/openresty -d 0
+./stage/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -d 0 -p /stage/openresty
 git clone https://github.com/arut/nginx-rtmp-module.git
 mv nginx-rtmp-module /stage/openresty/nginx-rtmp-module
 pushd /stage/openresty
@@ -46,7 +46,7 @@ pushd /stage/openresty
 	--with-stream_ssl_module \
 	--with-stream_realip_module \
 	--with-stream_ssl_preread_module \
-	--add-module=/tmp/openresty/nginx-rtmp-module
+	--add-module=./nginx-rtmp-module
 
 make -j$(getconf _NPROCESSORS_ONLN)
 popd
