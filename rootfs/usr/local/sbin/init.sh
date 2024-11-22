@@ -8,4 +8,4 @@ for exist in ${preset_dirs[@]}; do
 done
 cp -r /data-install/* /data
 service cron start
-nginx -g 'daemon off;' -p '/data/openresty'
+nginx -g 'daemon off;'
