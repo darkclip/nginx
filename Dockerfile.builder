@@ -19,7 +19,8 @@ RUN apt-get update \
     build-essential \
     libssl-dev \
     zlib1g-dev \
-    libpcre3-dev
+    libpcre3-dev \
+    libreadline-dev
 
 COPY scripts/install-release.sh scripts/build-openresty.sh /tmp/
 
