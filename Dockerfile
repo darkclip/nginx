@@ -97,6 +97,6 @@ RUN apt-get update \
 
 WORKDIR /data
 VOLUME [ "/data" ]
-
+EXPOSE 80 443/tcp 443/udp
 ENTRYPOINT [ "tini", "--" ]
 CMD [ "init.sh" ]
