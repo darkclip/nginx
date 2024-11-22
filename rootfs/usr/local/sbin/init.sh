@@ -4,7 +4,7 @@ dirs=$(ls -l /data-preset | awk '/^d/ {print $NF}')
 preset_dirs=($dirs)
 for exist in ${preset_dirs[@]}; do
     rm -rf /data-install/$exist
-    cp -r $exist /data-install/
+    cp -r /data-preset/$exist /data-install/
 done
 cp -r /data-install/* /data
 service cron start
