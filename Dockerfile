@@ -19,8 +19,6 @@ ARG LUA_VERSION=5.1.5
 ARG LUAROCKS_VERSION=3.11.1
 ARG CROWDSEC_VERSION=v1.0.5
 ARG ACME_VERSION=3.0.9
-ARG MAXMIND_USER
-ARG MAXMIND_TOKEN
 
 ENV OPENRESTY_VERSION=${OPENRESTY_VERSION}
 ENV LUA_VERSION=${LUA_VERSION}
@@ -63,9 +61,6 @@ RUN apt-get update \
     socat \
     libnginx-mod-http-geoip2 \
     libnginx-mod-stream-geoip2 \
-    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-ASN.mmdb" -f || true \
-    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-City.mmdb" -f || true \
-    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-Country.mmdb" -f || true \
     && apt-get install -y gcc make gettext \
     && pushd /tmp/lua \
     && make install \
