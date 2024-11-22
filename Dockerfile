@@ -40,6 +40,7 @@ ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
+COPY rootfs /
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
@@ -88,12 +89,12 @@ RUN apt-get update \
     && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y gcc make gettext \
     && cp -r /data /data-install \
+    && cp -r /data-preset/* /data/ \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /etc/nginx \
     && rm -rf /tmp/* /var/cache/* /var/log/* /var/lib/apt/lists/* /var/lib/dpkg/status-old
 
-COPY rootfs /
 WORKDIR /data
 VOLUME [ "/data" ]
 
