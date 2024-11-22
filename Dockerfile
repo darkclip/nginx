@@ -47,7 +47,7 @@ RUN apt-get update \
     ca-certificates \
     curl \
     tzdata \
-    nano \
+    micro \
     unzip \
     xz-utils \
     jq \

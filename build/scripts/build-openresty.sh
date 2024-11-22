@@ -3,8 +3,9 @@
 ./tmp/scripts/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -p /tmp/openresty -d 0
 git clone https://github.com/arut/nginx-rtmp-module.git
 mv /tmp/nginx-rtmp-module /tmp/openresty/nginx-rtmp-module
+pushd /tmp/openresty
 
-./tmp/openresty/configure \
+./configure \
 	--prefix=/opt/openresty \
 	--sbin-path=/usr/sbin/nginx \
 	--modules-path=/usr/lib/nginx/modules \
@@ -47,4 +48,4 @@ mv /tmp/nginx-rtmp-module /tmp/openresty/nginx-rtmp-module
 	--add-module=/tmp/openresty/nginx-rtmp-module
 
 make -j$(getconf _NPROCESSORS_ONLN)
-
+popd

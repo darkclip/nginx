@@ -4,6 +4,8 @@
 
 FROM debian:bookworm-slim
 
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+
 ARG OPENRESTY_VERSION=1.25.3.2
 ARG LUA_VERSION=5.1.5
 ARG LUAROCKS_VERSION=3.11.1
@@ -12,7 +14,7 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y \
     ca-certificates \
     curl \
-    nano \
+    micro \
     git \
     unzip \
     xz-utils \
