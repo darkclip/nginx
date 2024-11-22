@@ -89,7 +89,7 @@ RUN apt-get update \
     && popd \
     && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y gcc make gettext \
-    && cp /data /data-install \
+    && cp -r /data /data-install \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /etc/nginx \
