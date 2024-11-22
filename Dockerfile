@@ -63,9 +63,9 @@ RUN apt-get update \
     socat \
     libnginx-mod-http-geoip2 \
     libnginx-mod-stream-geoip2 \
-    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-ASN.mmdb" -f \
-    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-City.mmdb" -f \
-    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-Country.mmdb" -f \
+    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-ASN.mmdb" -f || true \
+    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-City/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-City.mmdb" -f || true \
+    && /tmp/install-release.sh -a ${MAXMIND_USER}:${MAXMIND_TOKEN} -u "https://download.maxmind.com/geoip/databases/GeoLite2-Country/download?suffix=tar.gz" -p "/usr/share/geoip" -d 0 -n "GeoLite2-Country.mmdb" -f || true \
     && apt-get install -y gcc make gettext \
     && pushd /tmp/lua \
     && make install \
