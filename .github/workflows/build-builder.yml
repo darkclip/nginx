@@ -6,8 +6,8 @@ on:
       - "master"
     paths:
       - ".github/workflows/build-builder.yml"
-      - "scripts/build-openresty.sh"
-      - "scripts/install-release.sh"
+      - "scripts/**"
+      - "rootfs/**"
       - "Dockerfile.builder"
   workflow_dispatch:
 

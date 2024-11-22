@@ -22,19 +22,19 @@ RUN apt-get update \
     libpcre3-dev \
     libreadline-dev
 
-COPY scripts/install-release.sh scripts/build-openresty.sh /tmp/
+COPY scripts rootfs /tmp/
 
 # Lua build
-RUN  /tmp/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /tmp/lua -d 0 \
+RUN  /tmp/scripts/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /tmp/lua -d 0 \
     && cd /tmp/lua \
     && make linux test \
     && make install
 
-RUN /tmp/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /tmp/luarocks -d 0 \
+RUN /tmp/scripts/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /tmp/luarocks -d 0 \
     && cd /tmp/luarocks \
     && ./configure \
     && make
 
 # Nginx build
-RUN /tmp/build-openresty.sh
+RUN /tmp/scripts/build-openresty.sh
 

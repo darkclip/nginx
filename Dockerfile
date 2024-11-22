@@ -40,7 +40,6 @@ ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
-COPY rootfs /
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
@@ -62,6 +61,7 @@ RUN apt-get update \
     socat \
     libnginx-mod-http-geoip2 \
     libnginx-mod-stream-geoip2 \
+    && cp -r /tmp/rootfs/* / \
     && apt-get install -y gcc make gettext \
     && pushd /tmp/lua \
     && make install \
@@ -76,13 +76,13 @@ RUN apt-get update \
     && popd \
     && useradd -s /usr/sbin/nologin nginx \
     && mkdir -p "${NGINX_CONF}" "${NGINX_LOG}" "${NGINX_CACHE}" "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" \
-    && /tmp/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -p /tmp/crowdsec -d 0 \
+    && /tmp/scripts/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -p /tmp/crowdsec -d 0 \
     && pushd /tmp/crowdsec \
     && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGINX_CONF}" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
     && sed -i 's|ENABLED=.*|ENABLED=false|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && sed -i 's|MODE=.*|MODE=stream|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && popd \
-    && /tmp/install-release.sh -r "acmesh-official/acme.sh" -t "${ACME_VERSION}" -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
+    && /tmp/scripts/install-release.sh -r "acmesh-official/acme.sh" -t "${ACME_VERSION}" -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
     && pushd /tmp/acme \
     && ./acme.sh --install --no-profile --force --home "${ACME_HOME}" --config-home "${ACME_CONFIG_HOME}" --cert-home "${CERT_HOME}" \
     && popd \

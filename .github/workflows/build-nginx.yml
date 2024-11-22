@@ -6,7 +6,6 @@ on:
       - "master"
     paths:
       - ".github/workflows/build-nginx.yml"
-      - "rootfs/**"
       - "Dockerfile"
   workflow_dispatch:
 
