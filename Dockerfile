@@ -75,6 +75,7 @@ RUN apt-get update \
     && popd \
     && pushd /tmp/openresty \
     && make install \
+    && luarocks install lua-resty-openssl \
     && luarocks install lua-resty-openidc \
     && popd \
     && useradd -s /usr/sbin/nologin nginx \
