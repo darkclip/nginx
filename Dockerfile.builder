@@ -26,14 +26,16 @@ COPY build /tmp/
 
 # Lua build
 RUN  /tmp/scripts/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /tmp/lua -d 0 \
-    && cd /tmp/lua \
+    && pushd /tmp/lua \
     && make linux test \
-    && make install
+    && make install \
+    && popd
 
 RUN /tmp/scripts/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /tmp/luarocks -d 0 \
-    && cd /tmp/luarocks \
+    && pushd /tmp/luarocks \
     && ./configure \
-    && make
+    && make \
+    && popd
 
 # Nginx build
 RUN /tmp/scripts/build-openresty.sh
