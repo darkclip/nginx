@@ -75,7 +75,7 @@ RUN apt-get update \
     && popd \
     && pushd /tmp/openresty \
     && make install \
-    && luarocks install lua-resty-http \
+    && luarocks install lua-resty-openidc \
     && popd \
     && useradd -s /usr/sbin/nologin nginx \
     && mkdir -p "${NGINX_CONF}" "${NGINX_LOG}" "${NGINX_CACHE}" "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" \
