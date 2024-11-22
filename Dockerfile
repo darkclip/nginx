@@ -40,7 +40,7 @@ ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
-COPY rootfs /
+COPY build/rootfs /
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
