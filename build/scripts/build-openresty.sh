@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-./stage/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -d 0 -p /stage/openresty
+./tmp/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -d 0 -p /tmp/openresty
 git clone https://github.com/arut/nginx-rtmp-module.git
-mv nginx-rtmp-module /stage/openresty/nginx-rtmp-module
-pushd /stage/openresty
+mv nginx-rtmp-module /tmp/openresty/nginx-rtmp-module
+pushd /tmp/openresty
 
 ./configure \
 	--prefix=/opt/openresty \
