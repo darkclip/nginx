@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
-./tmp/scripts/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -p /tmp/openresty -d 0
+./stage/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -p /stage/openresty -d 0
 git clone https://github.com/arut/nginx-rtmp-module.git
-mv nginx-rtmp-module /tmp/openresty/nginx-rtmp-module
-pushd /tmp/openresty
+mv nginx-rtmp-module /stage/openresty/nginx-rtmp-module
+pushd /stage/openresty
 
 ./configure \
 	--prefix=/opt/openresty \

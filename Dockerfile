@@ -39,7 +39,7 @@ ENV LE_CONFIG_HOME=/data/acme
 ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
-COPY --from=nginxbuilder /tmp /tmp
+COPY --from=nginxbuilder /stage /tmp
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \

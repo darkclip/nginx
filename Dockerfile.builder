@@ -25,15 +25,20 @@ RUN apt-get update \
     zlib1g-dev \
     libpcre3-dev \
     libreadline-dev\
-    && /tmp/scripts/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /tmp/lua -d 0 \
-    && pushd /tmp/lua \
+    mkdir stage \
+    mv /tmp/scripts/install-release.sh /stage \
+    && /stage/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /stage/lua -d 0 \
+    && pushd /stage/lua \
     && make linux test \
     && make install \
     && popd \
-    && /tmp/scripts/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /tmp/luarocks -d 0 \
-    && pushd /tmp/luarocks \
+    && /stage/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /stage/luarocks -d 0 \
+    && pushd /stage/luarocks \
     && ./configure \
     && make \
     && popd \
-    && /tmp/scripts/build-openresty.sh
+    && /tmp/scripts/build-openresty.sh \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /tmp
 
