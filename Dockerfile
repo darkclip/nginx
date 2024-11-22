@@ -40,6 +40,7 @@ ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 
 COPY --from=nginxbuilder /tmp /tmp
+COPY rootfs /
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
@@ -61,7 +62,6 @@ RUN apt-get update \
     socat \
     libnginx-mod-http-geoip2 \
     libnginx-mod-stream-geoip2 \
-    && cp -r /tmp/rootfs/* / \
     && apt-get install -y gcc make gettext \
     && pushd /tmp/lua \
     && make install \
