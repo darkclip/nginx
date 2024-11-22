@@ -26,7 +26,8 @@ RUN apt-get update \
     libpcre3-dev \
     libreadline-dev \
     && mkdir stage \
-    && mv /tmp/scripts/install-release.sh /stage \
+    && mv /tmp/scripts/install-release.sh /stage/ \
+    && mv /tmp/rootfs /stage/ \
     && ./stage/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /stage/lua -d 0 \
     && pushd /stage/lua \
     && make linux test \
