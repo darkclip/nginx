@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 ./stage/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -p /stage/openresty -d 0
 git clone https://github.com/arut/nginx-rtmp-module.git

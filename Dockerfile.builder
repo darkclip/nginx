@@ -27,17 +27,17 @@ RUN apt-get update \
     libreadline-dev \
     && mkdir stage \
     && mv /tmp/scripts/install-release.sh /stage \
-    && /stage/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /stage/lua -d 0 \
+    && ./stage/install-release.sh -u "http://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -p /stage/lua -d 0 \
     && pushd /stage/lua \
     && make linux test \
     && make install \
     && popd \
-    && /stage/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /stage/luarocks -d 0 \
+    && ./stage/install-release.sh -u "http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -p /stage/luarocks -d 0 \
     && pushd /stage/luarocks \
     && ./configure \
     && make \
     && popd \
-    && /tmp/scripts/build-openresty.sh \
+    && ./tmp/scripts/build-openresty.sh \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /tmp
