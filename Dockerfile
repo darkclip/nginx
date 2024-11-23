@@ -15,6 +15,9 @@ SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 ARG TARGETPLATFORM
 ARG OPENRESTY_VERSION=1.25.3.2
+# Fixed lua version for openresty 1.25
+# CrowdSec only support lua 5.1
+# Lua higher version don't need libreadline
 ARG LUA_VERSION=5.1.5
 ARG LUAROCKS_VERSION=3.11.1
 ARG CROWDSEC_VERSION=v1.0.5
@@ -38,6 +41,7 @@ ENV ACME_CONFIG_HOME=/data/acme
 ENV LE_CONFIG_HOME=/data/acme
 ENV CERT_HOME=/data/certs
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
+ENV SHELL=/usr/bin/bash
 
 COPY --from=nginxbuilder /tmp /tmp
 COPY build/rootfs /
