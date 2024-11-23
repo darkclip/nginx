@@ -13,7 +13,7 @@ mkdir -p \
 dirs=$(ls -l /data-install | awk '/^d/ {print $NF}')
 data_dirs=($dirs)
 for exist in ${data_dirs[@]}; do
-    if [ ! "$(ls -A /data/$exist)" ]; then
+    if [ ! "$(ls -A /data/$exist &>/dev/null)" ]; then
         cp -r /data-install/$exist /data/
     fi
 done
