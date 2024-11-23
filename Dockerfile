@@ -91,9 +91,10 @@ RUN apt-get update \
     && popd \
     && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y gcc make gettext \
+    && rm -r /data/openresty \
     && cp -r /data /data-install \
     && cp -r /data-preset/nginx/* ${NGX_CONF} \
-    && rm -r /data/openresty /data-preset \
+    && rm -r /data-preset \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /tmp/* /var/cache/* /var/log/* /var/lib/apt/lists/* /var/lib/dpkg/status-old
