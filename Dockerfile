@@ -31,7 +31,7 @@ ENV ACME_VERSION=${ACME_VERSION}
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 ENV LUALIB=/opt/openresty/lualib
-ENV NGINX_CONF=/data/openresty/conf.d
+ENV NGINX_CONF=/opt/openresty
 ENV NGINX_LOG=/data/openresty/log
 ENV NGINX_CACHE=/data/openresty/cache
 ENV CROWDSEC_DATA=/data/crowdsec
@@ -39,7 +39,9 @@ ENV ACME_HOME=/opt/acme
 ENV LE_WORKING_DIR=/opt/acme
 ENV ACME_CONFIG_HOME=/data/acme
 ENV LE_CONFIG_HOME=/data/acme
+ENV ACME_CHALLENGE=/data/acme/challenge
 ENV CERT_HOME=/data/certs
+ENV WWW_ROOT=/data/www
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 ENV SHELL=/usr/bin/bash
 
@@ -79,10 +81,10 @@ RUN apt-get update \
     && luarocks install lua-resty-openidc \
     && popd \
     && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p "${NGINX_CONF}" "${NGINX_LOG}" "${NGINX_CACHE}" "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" \
+    && mkdir -p "${NGINX_LOG}" "${NGINX_CACHE}" "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" "${ACME_CHALLENGE}" "${WWW_ROOT}" \
     && /tmp/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -p /tmp/crowdsec -d 0 \
     && pushd /tmp/crowdsec \
-    && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGINX_CONF}" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
+    && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGINX_CONF}/conf.d" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
     && sed -i 's|ENABLED=.*|ENABLED=false|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && sed -i 's|MODE=.*|MODE=stream|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && popd \
@@ -93,10 +95,9 @@ RUN apt-get update \
     && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y gcc make gettext \
     && cp -r /data /data-install \
-    && cp -r /data-preset/* /data/ \
+    && cp -r /data-preset/nginx/* ${NGINX_CONF} \
     && apt-get autoremove -y \
     && apt-get clean \
-    && rm -rf /etc/nginx \
     && rm -rf /tmp/* /var/cache/* /var/log/* /var/lib/apt/lists/* /var/lib/dpkg/status-old
 
 WORKDIR /data
