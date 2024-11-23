@@ -30,15 +30,16 @@ ENV CROWDSEC_VERSION=${CROWDSEC_VERSION}
 ENV ACME_VERSION=${ACME_VERSION}
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-ENV LUALIB=/opt/openresty/lualib
-ENV NGINX_CONF=/etc/nginx
+ENV NGX_HOME=/opt/openresty
+ENV LUALIB=${NGX_HOME}/lualib
+ENV NGX_CONF=/etc/nginx
 ENV CROWDSEC_DATA=/data/crowdsec
 ENV ACME_HOME=/opt/acme
-ENV LE_WORKING_DIR=/opt/acme
+ENV LE_WORKING_DIR=${ACME_HOME}
 ENV ACME_CONFIG_HOME=/data/acme
-ENV LE_CONFIG_HOME=/data/acme
+ENV LE_CONFIG_HOME=${ACME_CONFIG_HOME}
 ENV CERT_HOME=/data/certs
-ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
+ENV PATH=${ACME_HOME}:${NGX_HOME}/bin:${PATH}
 ENV SHELL=/usr/bin/bash
 
 COPY --from=nginxbuilder /tmp /tmp
@@ -77,10 +78,10 @@ RUN apt-get update \
     && luarocks install lua-resty-openidc \
     && popd \
     && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" \
+    && mkdir -p "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" \
     && /tmp/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -p /tmp/crowdsec -d 0 \
     && pushd /tmp/crowdsec \
-    && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGINX_CONF}/conf.d" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
+    && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGX_CONF}/conf.d" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
     && sed -i 's|ENABLED=.*|ENABLED=false|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && sed -i 's|MODE=.*|MODE=stream|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && popd \
@@ -90,8 +91,9 @@ RUN apt-get update \
     && popd \
     && acme.sh --set-default-ca --server letsencrypt \
     && apt-get remove -y gcc make gettext \
+    && rm -r /data/openresty \
     && cp -r /data /data-install \
-    && cp -r /data-preset/nginx/* ${NGINX_CONF} \
+    && cp -r /data-preset/nginx/* ${NGX_CONF} \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /tmp/* /var/cache/* /var/log/* /var/lib/apt/lists/* /var/lib/dpkg/status-old
