@@ -10,6 +10,7 @@ pushd /tmp/openresty
 	--prefix=/opt/openresty \
 	--sbin-path=/usr/sbin/nginx \
 	--modules-path=/usr/lib/nginx/modules \
+	--conf-path=/etc/nginx/nginx.conf \
 	--error-log-path=/data/openresty/log/error.log \
 	--http-log-path=/data/openresty/log/access.log \
 	--pid-path=/var/run/nginx.pid \
