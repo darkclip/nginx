@@ -32,16 +32,12 @@ ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 ENV LUALIB=/opt/openresty/lualib
 ENV NGINX_CONF=/etc/nginx
-ENV NGINX_LOG=/data/openresty/log
-ENV NGINX_CACHE=/data/openresty/cache
 ENV CROWDSEC_DATA=/data/crowdsec
 ENV ACME_HOME=/opt/acme
 ENV LE_WORKING_DIR=/opt/acme
 ENV ACME_CONFIG_HOME=/data/acme
 ENV LE_CONFIG_HOME=/data/acme
-ENV ACME_CHALLENGE=/data/acme/challenge
 ENV CERT_HOME=/data/certs
-ENV WWW_ROOT=/data/www
 ENV PATH=${ACME_HOME}:/opt/openresty/bin:${PATH}
 ENV SHELL=/usr/bin/bash
 
@@ -81,7 +77,7 @@ RUN apt-get update \
     && luarocks install lua-resty-openidc \
     && popd \
     && useradd -s /usr/sbin/nologin nginx \
-    && mkdir -p "${NGINX_LOG}" "${NGINX_CACHE}" "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" "${ACME_CHALLENGE}" "${WWW_ROOT}" \
+    && mkdir -p "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" "${CERT_HOME}" \
     && /tmp/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -p /tmp/crowdsec -d 0 \
     && pushd /tmp/crowdsec \
     && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGINX_CONF}/conf.d" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
