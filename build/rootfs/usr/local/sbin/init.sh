@@ -12,7 +12,7 @@ prepare_dirs=(
     /data/certs
 )
 for check in ${prepare_dirs[@]}; do
-    if [ ! "$(ls -A $check &>/dev/null)" ]; then
+    if [ ! -e "$check" ]; then
         mkdir -p $check
     fi
 done
@@ -20,7 +20,7 @@ done
 dirs=$(ls -l /data-install | awk '/^d/ {print $NF}')
 data_dirs=($dirs)
 for exist in ${data_dirs[@]}; do
-    if [ ! "$(ls -A /data/$exist &>/dev/null)" ]; then
+    if [ ! -e "/data/$exist" ]; then
         cp -r /data-install/$exist /data/
     fi
 done
