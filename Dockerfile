@@ -39,7 +39,7 @@ ENV LE_WORKING_DIR=${ACME_HOME}
 ENV ACME_CONFIG_HOME=/data/acme
 ENV LE_CONFIG_HOME=${ACME_CONFIG_HOME}
 ENV CERT_HOME=/data/certs
-ENV PATH=${ACME_HOME}:${NGX_HOME}/bin:${PATH}
+ENV PATH=/data/bin:${ACME_HOME}:${NGX_HOME}/bin:${PATH}
 ENV SHELL=/usr/bin/bash
 
 COPY --from=nginxbuilder /tmp /tmp
