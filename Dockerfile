@@ -63,6 +63,7 @@ RUN apt-get update \
     perl \
     cron \
     socat \
+    gettext-base \
     libnginx-mod-http-geoip2 \
     libnginx-mod-stream-geoip2 \
     && apt-get install -y gcc make gettext \
