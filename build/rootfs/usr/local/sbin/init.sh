@@ -7,7 +7,8 @@ prepare_dirs=(
     /data/openresty/http
     /data/openresty/stream
     /data/openresty/rtmp
-    /data/certs
+    /data/acme/challenge
+    /data/acme/certs
     /data/bin
 )
 for check in ${prepare_dirs[@]}; do
