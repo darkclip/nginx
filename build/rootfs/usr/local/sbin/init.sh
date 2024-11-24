@@ -10,6 +10,7 @@ prepare_dirs=(
     /data/openresty/stream
     /data/openresty/rtmp
     /data/certs
+    /data/bin
 )
 for check in ${prepare_dirs[@]}; do
     if [ ! -e "$check" ]; then
