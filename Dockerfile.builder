@@ -7,7 +7,6 @@ FROM debian:bookworm-slim
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 ARG OPENRESTY_VERSION=1.25.3.2
-ARG RTMP_VERSION=1.2.2
 ARG LUA_VERSION=5.1.5
 ARG LUAROCKS_VERSION=3.11.1
 ARG HTTP_PROXY=
@@ -37,7 +36,6 @@ RUN apt-get update \
     && ./tmp/install-release.sh -u "https://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -d 0 -p /tmp/lua \
     && ./tmp/install-release.sh -u "https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -d 0 -p /tmp/luarocks \
     && ./tmp/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -d 0 -p /tmp/openresty \
-    && ./tmp/install-release.sh -u "https://github.com/arut/nginx-rtmp-module/archive/refs/tags/v${RTMP_VERSION}.tar.gz" -d 0 -p /tmp/openresty/nginx-rtmp-module \
     && pushd /tmp/lua \
     && make linux test \
     && make install \
@@ -87,7 +85,6 @@ RUN apt-get update \
     --with-stream_ssl_module \
     --with-stream_realip_module \
     --with-stream_ssl_preread_module \
-    --add-module=./nginx-rtmp-module \
     && make -j$(getconf _NPROCESSORS_ONLN) \
     && popd \
     && apt-get autoremove -y \

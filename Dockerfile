@@ -66,6 +66,7 @@ RUN apt-get update \
     gettext-base \
     libnginx-mod-http-geoip2 \
     libnginx-mod-stream-geoip2 \
+    libnginx-mod-rtmp \
     libmodsecurity3 \
     libnginx-mod-http-modsecurity \
     modsecurity-crs \
