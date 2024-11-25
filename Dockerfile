@@ -70,7 +70,7 @@ RUN apt-get update \
     libmodsecurity3 \
     libnginx-mod-http-modsecurity \
     modsecurity-crs \
-    && apt-get install --no-install-recommends -y gcc make gettext \
+    && apt-get install --no-install-recommends -y gcc libc6-dev make gettext \
     && pushd /tmp/lua \
     && make install \
     && popd \
@@ -95,7 +95,7 @@ RUN apt-get update \
     && sed -i 's|ENABLED=.*|ENABLED=false|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && sed -i 's|MODE=.*|MODE=stream|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && acme.sh --set-default-ca --server letsencrypt \
-    && apt-get remove -y gcc make gettext \
+    && apt-get remove -y gcc libc6-dev make gettext \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -r /data/openresty \

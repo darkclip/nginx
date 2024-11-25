@@ -31,7 +31,6 @@ RUN apt-get update \
     zlib1g-dev \
     libpcre3-dev \
     libreadline-dev \
-    automake \
     && mv /build/scripts/install-release.sh /tmp/ \
     && ./tmp/install-release.sh -u "https://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -d 0 -p /tmp/lua \
     && ./tmp/install-release.sh -u "https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -d 0 -p /tmp/luarocks \
