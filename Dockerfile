@@ -64,17 +64,15 @@ RUN apt-get update \
     cron \
     socat \
     gettext-base \
-    libnginx-mod-http-geoip2 \
-    libnginx-mod-stream-geoip2 \
-    libnginx-mod-rtmp \
-    libmodsecurity3 \
-    libnginx-mod-http-modsecurity \
     modsecurity-crs \
     && apt-get install --no-install-recommends -y gcc libc6-dev make gettext \
     && pushd /tmp/lua \
     && make install \
     && popd \
     && pushd /tmp/luarocks \
+    && make install \
+    && popd \
+    && pushd /tmp/modsec \
     && make install \
     && popd \
     && pushd /tmp/openresty \
