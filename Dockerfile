@@ -14,9 +14,8 @@ LABEL maintainer="darkclip <darkclip@gmail.com>"
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 ARG TARGETPLATFORM
+# OpenResty 1.25 and CrowdSec only support lua 5.1
 ARG OPENRESTY_VERSION=1.25.3.2
-# Fixed lua version for openresty 1.25
-# CrowdSec only support lua 5.1
 ARG LUAROCKS_VERSION=3.11.1
 ARG CROWDSEC_VERSION=v1.0.5
 ARG ACME_VERSION=3.0.9
