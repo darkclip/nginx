@@ -17,14 +17,11 @@ ARG TARGETPLATFORM
 ARG OPENRESTY_VERSION=1.25.3.2
 # Fixed lua version for openresty 1.25
 # CrowdSec only support lua 5.1
-# Lua higher version don't need libreadline
-ARG LUA_VERSION=5.1.5
 ARG LUAROCKS_VERSION=3.11.1
 ARG CROWDSEC_VERSION=v1.0.5
 ARG ACME_VERSION=3.0.9
 
 ENV OPENRESTY_VERSION=${OPENRESTY_VERSION}
-ENV LUA_VERSION=${LUA_VERSION}
 ENV LUAROCKS_VERSION=${LUAROCKS_VERSION}
 ENV CROWDSEC_VERSION=${CROWDSEC_VERSION}
 ENV ACME_VERSION=${ACME_VERSION}
@@ -59,16 +56,22 @@ RUN apt-get update \
     openssl \
     zlib1g \
     libpcre3 \
+    lua5.1 \
+    liblua5.1-0 \
     libreadline8 \
+    libmaxminddb0 \
     perl \
     cron \
     socat \
     gettext-base \
     modsecurity-crs \
+    libyajl2 \
+    liblmdb0 \
+    ssdeep \
+    libcurl4 \
+    libxml2 \
+    libpcre2-8-0 \
     && apt-get install --no-install-recommends -y gcc libc6-dev make gettext \
-    && pushd /tmp/lua \
-    && make install \
-    && popd \
     && pushd /tmp/luarocks \
     && make install \
     && popd \
