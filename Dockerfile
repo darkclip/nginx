@@ -66,10 +66,7 @@ RUN apt-get update \
     gettext-base \
     modsecurity-crs \
     libmodsecurity3 \
-    libyajl2 \
-    liblmdb0 \
     ssdeep \
-    libcurl4 \
     libxml2 \
     libpcre2-8-0 \
     && apt-get install --no-install-recommends -y gcc libc6-dev make gettext \

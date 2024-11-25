@@ -27,6 +27,7 @@ RUN apt-get update \
     unzip \
     xz-utils \
     build-essential \
+    git \
     libssl-dev \
     zlib1g-dev \
     libpcre3-dev \
