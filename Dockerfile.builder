@@ -40,9 +40,9 @@ RUN apt-get update \
     && mv /build/scripts/install-release.sh /tmp/ \
     && ./tmp/install-release.sh -u "https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -d 0 -p /tmp/luarocks \
     && ./tmp/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -d 0 -p /tmp/openresty \
-    && ./tmp/install-release.sh -r leev/ngx_http_geoip2_module -k 'tarball' -o http_geoip2.tar.gz -d 0 -p /tmp/openresty/ngx_http_geoip2_module \
+    && ./tmp/install-release.sh -r "leev/ngx_http_geoip2_module" -k 'tarball' -o http_geoip2.tar.gz -d 0 -p /tmp/openresty/ngx_http_geoip2_module \
     && ./tmp/install-release.sh -u "https://github.com/arut/nginx-rtmp-module/archive/refs/tags/v${RTMP_VERSION}.tar.gz" -d 0 -p /tmp/openresty/nginx-rtmp-module \
-    && ./tmp/install-release.sh -r owasp-modsecurity/ModSecurity-nginx -m 'gz"$' -d 0 -p /tmp/openresty/ModSecurity-nginx \
+    && ./tmp/install-release.sh -r "owasp-modsecurity/ModSecurity-nginx" -m 'gz"$' -d 0 -p /tmp/openresty/ModSecurity-nginx \
     && pushd /tmp/luarocks \
     && ./configure \
     && make \
