@@ -65,6 +65,7 @@ RUN apt-get update \
     socat \
     gettext-base \
     modsecurity-crs \
+    libmodsecurity3 \
     libyajl2 \
     liblmdb0 \
     ssdeep \
@@ -73,9 +74,6 @@ RUN apt-get update \
     libpcre2-8-0 \
     && apt-get install --no-install-recommends -y gcc libc6-dev make gettext \
     && pushd /tmp/luarocks \
-    && make install \
-    && popd \
-    && pushd /tmp/modsec \
     && make install \
     && popd \
     && pushd /tmp/openresty \

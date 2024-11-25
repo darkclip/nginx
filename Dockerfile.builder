@@ -34,18 +34,9 @@ RUN apt-get update \
     liblua5.1-0-dev \
     libreadline-dev \
     libmaxminddb-dev \
-    automake \
-    libtool \
-    git \
-    libyajl-dev \
-    liblmdb-dev \
-    ssdeep \
-    libcurl4-gnutls-dev \
-    libxml2-dev \
-    libpcre2-dev \
+    libmodsecurity-dev \
     && mv /build/scripts/install-release.sh /tmp/ \
     && ./tmp/install-release.sh -u "https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz" -d 0 -p /tmp/luarocks \
-    && ./tmp/install-release.sh -r owasp-modsecurity/ModSecurity -m 'gz"$' -d 0 -p /tmp/modsec \
     && ./tmp/install-release.sh -u "https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz" -d 0 -p /tmp/openresty \
     && ./tmp/install-release.sh -r leev/ngx_http_geoip2_module -k 'tarball' -o http_geoip2.tar.gz -d 0 -p /tmp/openresty/ngx_http_geoip2_module \
     && ./tmp/install-release.sh -u "https://github.com/arut/nginx-rtmp-module/archive/refs/tags/v${RTMP_VERSION}.tar.gz" -d 0 -p /tmp/openresty/nginx-rtmp-module \
@@ -53,12 +44,6 @@ RUN apt-get update \
     && pushd /tmp/luarocks \
     && ./configure \
     && make \
-    && popd \
-    && pushd /tmp/modsec \
-    && ./build.sh \
-    && ./configure \
-    && make \
-    && make install \
     && popd \
     && pushd /tmp/openresty \
     && ./configure \
