@@ -11,7 +11,6 @@ done
 prepare_dirs=(
     /data/openresty/log
     /data/openresty/cache
-    /data/openresty/module
     /data/openresty/http
     /data/openresty/stream
     /data/openresty/rtmp
