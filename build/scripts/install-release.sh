@@ -32,6 +32,7 @@ main(){
             echo
         fi
     else
+        echo "Download from $DD_URL"
         dl_url="$DD_URL"
     fi
     if [ $(echo -e "$dl_url" | wc -l) -ne 1 ] || [ -z "$dl_url" ]; then
