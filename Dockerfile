@@ -87,9 +87,10 @@ RUN apt-get update \
     && pushd /tmp/acme \
     && ./acme.sh --install --no-profile --force --home "${ACME_HOME}" --config-home "${ACME_CONFIG_HOME}" --cert-home "${CERT_HOME}" \
     && popd \
-    && sed -i 's|ENABLED=.*|ENABLED=false|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
-    && sed -i 's|MODE=.*|MODE=stream|' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
+    && sed -i 's|ENABLED=.*|ENABLED=false|g' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
+    && sed -i 's|MODE=.*|MODE=stream|g' "${CROWDSEC_DATA}"/crowdsec-openresty-bouncer.conf \
     && acme.sh --set-default-ca --server letsencrypt \
+    && sed -i 's|.*GeoLite2-Country.mmdb|SecGeoLookupDB /usr/share/GeoIP/GeoLite2-Country.mmdb|g' /etc/modsecurity/crs/crs-setup.conf \
     && apt-get remove -y gcc libc6-dev make gettext \
     && apt-get autoremove -y \
     && apt-get clean \
