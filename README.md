@@ -26,10 +26,16 @@ This docker image is integrated with
 Set account email with environment variable: `ACCOUNT_EMAIL=user@example.com`
 
 For http-01, include `/etc/nginx/conf.d/common/acme-challenge.conf` in server conf, then:
-`acme.sh --issue -d "example.com" -d "sub.example.com" --nginx`
+
+```bash
+acme.sh --issue -d "example.com" -d "sub.example.com" --nginx
+```
 
 For dns-01, set dns api key in docker environment variable, then:
-`acme.sh --issue -d "example.com" -d "*.example.com" --dns dns_cf`
+
+```bash
+acme.sh --issue -d "example.com" -d "*.example.com" --dns dns_cf
+```
 
 To install cert:
 
@@ -45,7 +51,7 @@ acme.sh --install-cert -d "example.com" \
 
 ### Common nginx conf snippets
 
-/etc/nginx/conf.d/common/*.conf
+`/etc/nginx/conf.d/common/*.conf`
 
 ### ModSecurity
 
@@ -56,4 +62,4 @@ modsecurity_rules_file /etc/nginx/modsecurity.conf;
 
 ### CrowdSec config file
 
-/data/crowdsec/crowdsec-openresty-bouncer.conf
+`/data/crowdsec/crowdsec-openresty-bouncer.conf`
