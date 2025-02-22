@@ -14,6 +14,7 @@ This docker image is integrated with
 ## Data Folder Structure
 
 |Folder   |Content|
+|:-       |:-    |
 |acme     |acme config and certs home|
 |bin      |user executable|
 |crowdsec |crowdsec nginx bouncer config|
