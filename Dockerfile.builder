@@ -6,6 +6,7 @@ FROM debian:bookworm-slim
 
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
+ARG TARGETPLATFORM
 ARG LUAROCKS_VERSION=3.11.1
 ARG OPENRESTY_VERSION=1.25.3.2
 ARG RTMP_VERSION=v1.2.2
@@ -21,7 +22,8 @@ ENV NO_PROXY=${NO_PROXY}
 
 COPY build /build/
 
-RUN apt-get update \
+RUN echo "TARGET: ${TARGETPLATFORM}" \
+    && apt-get update \
     && apt-get install --no-install-recommends -y \
     ca-certificates \
     curl \
