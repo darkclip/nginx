@@ -32,6 +32,8 @@ jobs:
           file: Dockerfile.builder
           context: .
           push: true
-          platforms: linux/amd64
+          platforms: |
+            linux/amd64
+            linux/arm64
           tags: |
             darkclip/nginx-builder:latest

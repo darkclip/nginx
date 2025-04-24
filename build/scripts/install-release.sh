@@ -2,7 +2,7 @@
 set -e
 
 DEFAULT_RELEASE="latest"
-DEFAULT_MATCH_STAGE_1="browser_download_url"
+DEFAULT_MATCH="browser_download_url"
 
 
 main(){
@@ -12,20 +12,36 @@ main(){
         exit 1
     fi
     if [ -z "$DD_URL" ]; then
+        RELEASE=$DEFAULT_RELEASE
+        if [ ! -z "$TAG" ]; then
+            RELEASE="tags/$TAG"
+        fi
         echo "Query for $REPO"
         echo
-            api_url="https://api.github.com/repos/$REPO/releases/$TAG"
+        api_url="https://api.github.com/repos/$REPO/releases/$RELEASE"
+        if $LIST_TAGS; then
+            api_url="https://api.github.com/repos/$REPO/tags"
+        fi
         if $VERBOSE; then
             echo "API: $api_url"
             echo
         fi
-        candidates=$(curl $SET_AUTH $SET_PROXY -sSfL "$api_url" | grep -P "$MATCH_STAGE_1")
+        candidates=$(curl $SET_AUTH $SET_PROXY -sSfL "$api_url")
+        if $LIST_TAGS && [ ! -z "$TAG" ]; then
+            candidates=$(echo "$candidates" | grep -P "$TAG")
+        fi
+        if [ ! -z "$MATCH_STAGE_1" ]; then
+            candidates=$(echo "$candidates" | grep -P "$MATCH_STAGE_1")
+        fi
+        if [ ! -z "$MATCH_STAGE_2" ]; then
+            candidates=$(echo "$candidates" | grep -P "$MATCH_STAGE_2")
+        fi
         if $VERBOSE; then
             echo "Candidates:"
             echo "$candidates"
             echo
         fi
-        dl_url=$(echo "$candidates" | grep -P "$MATCH_STAGE_2" | cut -d '"' -f 4)
+        dl_url=$(echo "$candidates" | cut -d '"' -f 4)
         if $VERBOSE; then
             echo "From:"
             echo "$dl_url"
@@ -147,7 +163,7 @@ main(){
         exit 1
     fi
 
-    PROG_PATH=$(realpath "$PROG_PATH");
+    PROG_PATH=$(realpath -m "$PROG_PATH");
     echo
     echo "Installing..."
     echo "From: $CWD"
@@ -198,9 +214,10 @@ usage(){
     echo "Options:";
     echo "    -r <REPO>        Github repo";
     echo "    -t <TAG>         Release tag (default: $DEFAULT_RELEASE)";
-    echo "    -k <KEY>         Match stage 1 with regexp (default: $DEFAULT_MATCH_STAGE_1)";
+    echo "    -k <KEY>         Match stage 1 with regexp (default: $DEFAULT_MATCH)";
     echo "    -m <MATCH>       Match stage 2 with regexp";
-    echo "    -u <URL>         Direct download url (bypass query repo)";
+    echo "    -l               List all tags";
+    echo "    -u <URL>         Direct download url (bypass Github repo)";
     echo "    -b               Do not inflate";
     echo "    -p <PATH>        Program path";
     echo "    -n <NAME>        Program name";
@@ -208,7 +225,7 @@ usage(){
     echo "    -o <NAME>        Package name";
     echo "    -d <DIR>         Dir inside package:";
     echo "                         '-' as packge name without extension";
-    echo "                         space separated stirng mixed with:";
+    echo "                         or space separated string, can mixed with:";
     echo "                             number as index";
     echo "                             string as name";
     echo "    -e <EXP>         Expression for sed (only for '-d -')";
@@ -219,9 +236,10 @@ usage(){
 }
 
 REPO=
-TAG=$DEFAULT_RELEASE
-MATCH_STAGE_1=$DEFAULT_MATCH_STAGE_1
+TAG=
+MATCH_STAGE_1=$DEFAULT_MATCH
 MATCH_STAGE_2=
+LIST_TAGS=false
 DD_URL=
 NO_INFLATE=false
 PROG_PATH=
@@ -234,19 +252,22 @@ CMD_RELOAD=
 VERBOSE=false
 SET_AUTH=
 SET_PROXY=
-while getopts ":r:t:k:m:u:bp:n:fo:d:e:c:va:x:" OPT; do
+while getopts ":r:t:k:m:lu:bp:n:fo:d:e:c:va:x:" OPT; do
     case $OPT in
         r)
             REPO=$OPTARG;
             ;;
         t)
-            TAG="tags/$OPTARG";
+            TAG=$OPTARG;
             ;;
         k)
             MATCH_STAGE_1=$OPTARG;
             ;;
         m)
             MATCH_STAGE_2=$OPTARG;
+            ;;
+        l)
+            LIST_TAGS=true;
             ;;
         u)
             DD_URL=$OPTARG;

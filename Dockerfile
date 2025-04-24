@@ -16,7 +16,7 @@ SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 ARG TARGETPLATFORM
 # OpenResty 1.25 and CrowdSec only support lua 5.1
 ARG CROWDSEC_VERSION=v1.0.5
-ARG ACME_VERSION=3.0.9
+ARG ACME_VERSION=3.1.0
 ARG HTTP_PROXY=
 ARG ALL_PROXY=
 ARG NO_PROXY=
@@ -42,7 +42,8 @@ ENV SHELL=/usr/bin/bash
 COPY --from=nginxbuilder /tmp /tmp
 COPY build/rootfs /
 
-RUN apt-get update \
+RUN echo "TARGET: ${TARGETPLATFORM}" \
+    && apt-get update \
     && apt-get install --no-install-recommends -y \
     tini \
     ca-certificates \
@@ -69,6 +70,7 @@ RUN apt-get update \
     ssdeep \
     libxml2 \
     libpcre2-8-0 \
+    libxslt1.1 \
     && apt-get install --no-install-recommends -y gcc libc6-dev make gettext \
     && pushd /tmp/luarocks \
     && make install \
@@ -80,11 +82,11 @@ RUN apt-get update \
     && luarocks install lua-resty-openidc \
     && useradd -s /usr/sbin/nologin nginx \
     && mkdir -p "${CROWDSEC_DATA}" "${ACME_HOME}" "${ACME_CONFIG_HOME}" \
-    && /tmp/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -p /tmp/crowdsec -d 0 \
+    && /tmp/install-release.sh -r "crowdsecurity/cs-openresty-bouncer" -t "${CROWDSEC_VERSION}" -d 0 -p /tmp/crowdsec \
     && pushd /tmp/crowdsec \
     && ./install.sh --docker --LIB_PATH="${LUALIB}" --NGINX_CONF_DIR="${NGX_CONF}/conf.d" --CONFIG_PATH="${CROWDSEC_DATA}" --DATA_PATH="${CROWDSEC_DATA}" \
     && popd \
-    && /tmp/install-release.sh -r "acmesh-official/acme.sh" -t "${ACME_VERSION}" -k tarball -p /tmp/acme -o acme.tar.gz -d 0 \
+    && /tmp/install-release.sh -r "acmesh-official/acme.sh" -t "${ACME_VERSION}" -k "tarball"  -o acme.tar.gz -d 0 -p /tmp/acme \
     && pushd /tmp/acme \
     && ./acme.sh --install --no-profile --force --home "${ACME_HOME}" --config-home "${ACME_CONFIG_HOME}" --cert-home "${CERT_HOME}" \
     && popd \
