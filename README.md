@@ -7,6 +7,7 @@ This docker image is integrated with
 - GeoIP2
 - RTMP
 - ModSecurity
+- NGINX JavaScript
 - CrowdSec
 - acme.sh
 
