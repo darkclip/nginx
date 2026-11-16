@@ -55,7 +55,7 @@ RUN echo "TARGET: ${TARGETPLATFORM}" \
     apache2-utils \
     openssl \
     zlib1g \
-    libpcre3 \
+    libpcre2-8-0 \
     luajit \
     libreadline8 \
     libmaxminddb0 \
