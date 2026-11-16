@@ -2,15 +2,15 @@
 # Nginx Builder
 #############
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 ARG TARGETPLATFORM
-ARG LUAROCKS_VERSION=3.11.1
-ARG OPENRESTY_VERSION=1.25.3.2
+ARG LUAROCKS_VERSION=3.13.0
+ARG OPENRESTY_VERSION=1.27.1.2
 ARG RTMP_VERSION=v1.2.2
-ARG NJS_VERSION=0.8.10
+ARG NJS_VERSION=0.9.5
 ARG HTTP_PROXY=
 ARG ALL_PROXY=
 ARG NO_PROXY=
@@ -35,8 +35,8 @@ RUN echo "TARGET: ${TARGETPLATFORM}" \
     libssl-dev \
     zlib1g-dev \
     libpcre3-dev \
-    lua5.1 \
-    liblua5.1-0-dev \
+    luajit \
+    libluajit-5.1-dev \
     libreadline-dev \
     libmaxminddb-dev \
     libmodsecurity-dev \

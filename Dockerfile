@@ -8,13 +8,12 @@ FROM darkclip/nginx-builder:latest AS nginxbuilder
 # Final Image
 #############
 
-FROM debian:bookworm-slim AS final
-LABEL maintainer="darkclip <darkclip@gmail.com>"
+FROM debian:trixie-slim AS final
+LABEL maintainer="darkclip <darkclip@hanv.dev>"
 
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 ARG TARGETPLATFORM
-# OpenResty 1.25 and CrowdSec only support lua 5.1
 ARG CROWDSEC_VERSION=v1.0.5
 ARG ACME_VERSION=3.1.0
 ARG HTTP_PROXY=
@@ -57,8 +56,7 @@ RUN echo "TARGET: ${TARGETPLATFORM}" \
     openssl \
     zlib1g \
     libpcre3 \
-    lua5.1 \
-    liblua5.1-0 \
+    luajit \
     libreadline8 \
     libmaxminddb0 \
     perl \
