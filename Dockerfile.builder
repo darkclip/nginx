@@ -34,7 +34,7 @@ RUN echo "TARGET: ${TARGETPLATFORM}" \
     git \
     libssl-dev \
     zlib1g-dev \
-    libpcre3-dev \
+    libpcre2-dev \
     luajit \
     libluajit-5.1-dev \
     libreadline-dev \
